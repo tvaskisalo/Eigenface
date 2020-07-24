@@ -1,2 +1,2 @@
 # Eigenface
-Projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit varten 
+Java projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit varten 
