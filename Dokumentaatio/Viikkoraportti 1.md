@@ -12,3 +12,7 @@ Seuraavalla viikolla tarkoitukseni olisi luoda luokka, joka on vastuussa matriis
 
 
 Tarkoitukseni on myös yrittää luoda projektia testivetoisena kehityksenä, jotta testit ovat kattavia ja hyviä. Koen, että tämä voi helpottaa hajoittamaan metodeita osa-ongelmiksi, joka helpottaa algoritmin luomista. Tällöin voin myös varmistaa, että muutokset algoritmeihin ei aiheuta virheitä. Esimerkiksi, kun muutan matriisikertolaskun naiivista strassenin algoritmiin, niin testit ovat jo valmiita ja tiedän välittömästi toimiiko uusi kertolasku vai ei.
+
+Viikon tuntikirjanpito:
+
+24.7.2020: 4.5h
