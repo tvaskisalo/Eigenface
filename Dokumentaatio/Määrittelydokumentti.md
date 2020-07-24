@@ -5,13 +5,13 @@
 
 ## **Vaaditut algoritmit**
 
-* 1. Kuvan muuttaminen matriisiksi
-* 2. Värillisen kuvan muuttaminen mustavalkoiseksi
-* 3. Matriisi kertolaskun algoritmi (esimerkiksi Strassen algoritmi)
-* 4. Matriisin uudelleen muotoiluun algoritmi
-* 5. Matriisin sarakekeskiarvojen laskeminen
-* 6. Matriisien erotuksen laskeminen
-* 7. Algoritmi SVD:n laskemiseen.
+1. Kuvan muuttaminen matriisiksi
+2. Värillisen kuvan muuttaminen mustavalkoiseksi
+3. Matriisi kertolaskun algoritmi (esimerkiksi Strassen algoritmi)
+4. Matriisin uudelleen muotoiluun algoritmi
+5. Matriisin sarakekeskiarvojen laskeminen
+6. Matriisien erotuksen laskeminen
+7. Algoritmi SVD:n laskemiseen.
 
 ## **Ongelma**
 
@@ -45,5 +45,7 @@ Tilavaatimus on luokkaa O(mn^2), jossa m on kuvien määrä ja n on nxn kuvan ka
 Lähteet:
 
 https://en.wikipedia.org/wiki/Eigenface#Connection_with_SVD
+
 http://blog.manfredas.com/eigenfaces-tutorial/
+
 https://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations
