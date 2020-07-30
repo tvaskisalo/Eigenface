@@ -8,3 +8,16 @@ Java projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit 
 ### Viikkoraportit
 
 [Viikkoraportti 1.](https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/Viikkoraportti%201.md)
+[Viikkoraportti 2.](https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/Viikkoraportti%202.md)
+
+
+## Komentorivitoimintoja
+
+### Testit komennolla
+mvn test
+
+### Checkstylen generointi
+jxr:jxr checkstyle:checkstyle
+
+### Javadocin generointi
+mvn javadoc:javadoc
