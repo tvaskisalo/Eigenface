@@ -5,6 +5,8 @@
  */
 package eigenface;
 
+import eigenface.logic.ImageProcessing;
+
 
 
 /**
@@ -15,5 +17,7 @@ package eigenface;
  */
 public class Main {
     public static void main(String[] args) {
+        ImageProcessing im = new ImageProcessing();
+        im.a();
     }
 }

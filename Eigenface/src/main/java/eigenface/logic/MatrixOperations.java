@@ -94,9 +94,9 @@ public class MatrixOperations {
     public double[] reshapeToVectorByRow(double[][] matrix) {
         double[] vector = new double[matrix.length * matrix[0].length];
         int index = 0;
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                vector[index] = matrix[i][j];
+        for (int i = 0; i < matrix[0].length; i++) {
+            for (int j = 0; j < matrix.length; j++) {
+                vector[index] = matrix[j][i];
                 index++;
             }
         }
