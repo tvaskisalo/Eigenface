@@ -21,19 +21,31 @@ public class MatrixOperations {
      * @return Metodi palauttaa matriisien summan
      * @throws Exception Toistaiseksi heittää geneerisen poikkeuksen, jos matriisit ovat eri muotoisia.
      */
-    public double[][] add(double matrixA[][], double matrixB[][]) throws Exception {
+    public double[][] subtract(double matrixA[][], double matrixB[][]) throws Exception {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new Exception("Incorrect matrix dimensions");
         }
-        double[][] addition = new double[matrixA.length][matrixA[0].length];
+        double[][] substraction = new double[matrixA.length][matrixA[0].length];
         
         for (int i = 0; i < matrixA.length; i++) {
             for (int j = 0; j < matrixA[0].length; j++) {
-                addition[i][j] = matrixA[i][j] + matrixB[i][j];
+                substraction[i][j] = matrixA[i][j] - matrixB[i][j];
             }
         }
         
-        return addition;
+        return substraction;
+    }
+    
+    public double[][] subtract(double matrix[][], double value) {
+        double[][] substraction = new double[matrix.length][matrix[0].length];
+        
+        for(int i =0; i<matrix.length; i++) {
+            for(int j=0; j<matrix[0].length; j++) {
+                substraction[i][j] = matrix[i][j]-value;
+            }
+        }
+        
+        return substraction;
     }
     
     /**
@@ -58,6 +70,18 @@ public class MatrixOperations {
         return true;
     }
     
+    public boolean vectorEquals(double[] vectorA, double[] vectorB) {
+        if(vectorA.length != vectorB.length) {
+            return false;
+        }
+        for (int i=0; i<vectorA.length; i++) {
+            if (vectorA[i]!=vectorB[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     /**
      * Metodi laskee annettujen matriisien matriisi tulon kertomalla matriisin A
      * matriisilla B. 
@@ -68,21 +92,39 @@ public class MatrixOperations {
      */
     
     public double[][] multiply(double matrixA[][], double matrixB[][]) throws Exception {
-        if (matrixA[0].length != matrixB.length) {
+        if (matrixA.length != matrixB[0].length) {
             throw new Exception("Incorrect matrix dimensions");
         }
-        double[][] result = new double[matrixA.length][matrixB[0].length];
-        for (int i = 0; i < matrixA.length; i++) {
-            for (int j = 0; j < matrixB[0].length; j++) {
+        double[][] result = new double[matrixA[0].length][matrixB.length];
+        for (int i = 0; i < matrixA[0].length; i++) {
+            for (int j = 0; j < matrixB.length; j++) {
                 double value = 0;
-                for (int k = 0; k < matrixB.length; k++) {
-                    value += matrixA[i][k] * matrixB[k][j];
+                for (int k = 0; k < matrixB[0].length; k++) {
+                    value += matrixA[k][i] * matrixB[j][k];
                 }
-                result[i][j] = value;
+                result[j][i] = value;
             }
         }
         return result;
     }
+    
+    public double[] multiply(double matrix[][], double vector[]) throws Exception{
+        if (matrix.length != vector.length) {
+            throw new Exception("Incorrect dimensions");
+        }
+        double[] result = new double[matrix[0].length];
+        for (int i = 0; i < matrix[0].length; i++) {
+            double value = 0;
+            for (int k = 0; k < vector.length; k++) {
+                value += matrix[k][i] * vector[k];
+            }
+            result[i] = value;
+            
+        }
+        return result;
+    }
+    
+    
     
     /**
      * Metodi muuttaa matriisista vektorin littämällä rivit yhteen.
@@ -119,6 +161,17 @@ public class MatrixOperations {
             returnVector[j] = vector[j] - mean;
         }
         return returnVector;
+    }
+    
+    public double meanOfMatrix(double[][] matrix) {
+        int count = matrix.length * matrix[0].length;
+        double sum =0;
+        for (int i=0; i<matrix.length; i++) {
+            for (int j=0; j<matrix[0].length; j++) {
+                sum += matrix[i][j];
+            }
+        }
+        return sum/count;
     }
 }
 

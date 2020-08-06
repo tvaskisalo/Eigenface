@@ -91,9 +91,30 @@ public class MatrixBasicOperationsTest {
         assertTrue(!matop.matrixEquals(matrixA, matrixB));
     }
     
+    @Test
+    public void vectorEqualsReturnsFalseCorrectly1() {
+        double[] vectorA = {1,2,3};
+        double[] vectorB = {1,2};
+        assertFalse(matop.vectorEquals(vectorA, vectorB));
+    }
     
     @Test
-    public void matrixAdditionReturnsCorrectAnswer1() {
+    public void vectorEqualsReturnsFalseCorrectly2() {
+        double[] vectorA = {4,5,6};
+        double[] vectorB = {7,8,9};
+        assertFalse(matop.vectorEquals(vectorA, vectorB));
+    }
+    
+    @Test
+    public void vectorEqualsReturnsTrueCorrecyly() {
+        double[] vectorA = {1,2,3,4,5,6,7,8,9};
+        double[] vectorB = vectorA;
+        assertTrue(matop.vectorEquals(vectorA, vectorB));
+    }
+    
+    
+    @Test
+    public void matrixSubtractionReturnsCorrectAnswer1() {
         double[][] matrixA = new double[3][3];
         double[][] matrixB = new double[3][3];
         double[][] result = new double[3][3];
@@ -101,13 +122,13 @@ public class MatrixBasicOperationsTest {
         for(int i = 0; i<3; i++) {
             for(int j = 0; j<3; j++) {
                 matrixA[i][j]=i+j;
-                matrixB[i][j]=i+j;
-                result[i][j]=i+j+i+j;
+                matrixB[i][j]=i-j;
+                result[i][j]=j+j;
             }
         }
         
         try {
-            double[][] add = matop.add(matrixA, matrixB);
+            double[][] add = matop.subtract(matrixA, matrixB);
             assertTrue(matop.matrixEquals(add, result));
         } catch (Exception e){
             System.out.println(e.getMessage());
@@ -116,7 +137,7 @@ public class MatrixBasicOperationsTest {
     }
     
     @Test 
-    public void matrixAdditionReturnsCorrectAnswer2() {
+    public void matrixSubtractionReturnsCorrectAnswer2() {
         double[][] matrixA = new double[100][100];
         double[][] matrixB = new double[100][100];
         double[][] result = new double[100][100];
@@ -124,12 +145,12 @@ public class MatrixBasicOperationsTest {
         for(int i = 0; i<100; i++) {
             for(int j = 0; j<100; j++) {
                 matrixA[i][j]=(i+1)/(j+1);
-                matrixB[i][j]=-i*j;
+                matrixB[i][j]=i*j;
                 result[i][j]=(i+1)/(j+1) -i*j;
             }
         }
         try {
-            double[][] addition = matop.add(matrixA, matrixB);
+            double[][] addition = matop.subtract(matrixA, matrixB);
             assertTrue(matop.matrixEquals(addition, result));            
         } catch(Exception e) {
             System.out.println(e.getMessage());
@@ -139,12 +160,12 @@ public class MatrixBasicOperationsTest {
     
     
     @Test
-    public void matrixAdditionThrowsExceptionWithBadMatrixes() {
+    public void matrixSubtractionThrowsExceptionWithBadMatrixes() {
         double[][] matrixA = new double[10][100];
         double[][] matrixB = new double[100][10];
         boolean caught = false;
         try {
-            matop.add(matrixA, matrixB);
+            matop.subtract(matrixA, matrixB);
         } catch(Exception e) {
             caught = true;
         }
@@ -180,12 +201,12 @@ public class MatrixBasicOperationsTest {
     
     @Test
     public void matrixMultiplicationWithZeroMatrixReturnsZeroMatrix2() {
-        double[][] matrixA = {{0,0,0}, {0,0,0}};
-        double[][] matrixB = {{1,2},{3,4},{5,6}};
+        double[][] matrix = {{1,2},{3,4},{5,6}};
+        double[] vector = {0,0,0};
         try {
-            double[][] result = matop.multiply(matrixA, matrixB);
-            double[][] correct = {{0,0},{0,0}};
-            assertTrue(matop.matrixEquals(correct, result));
+            double[] result = matop.multiply(matrix, vector);
+            double[] correct = {0,0};
+            assertTrue(matop.vectorEquals(correct, result));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             assertTrue(false);
@@ -208,8 +229,8 @@ public class MatrixBasicOperationsTest {
     
     @Test
     public void matrixMultiplicationReturnsCorrectAnswer2() {
-        double[][] matrixA = {{1,2},{3,4},{5,6}};
-        double[][] matrixB = {{1,2,3},{4,5,6}};
+        double[][] matrixA = {{1,2,3},{4,5,6}};
+        double[][] matrixB = {{1,2},{3,4},{5,6}};
         double[][] correct = {{9,12,15},{19,26,33},{29,40,51}};
         boolean t = false;
         try {
@@ -219,5 +240,36 @@ public class MatrixBasicOperationsTest {
             System.out.println(e.getMessage());
         }
         assertTrue(t);
+    }
+    
+    @Test
+    public void matrixMultiplicationReturnsCorrectAnswer3() {
+        double[][] matrixA = {{1,2,3},{4,5,6}};
+        double[] vector = {1,2};
+        double[] correct = {9,12,15};
+        boolean t = false;
+        try {
+            double[] result = matop.multiply(matrixA, vector);
+            t=matop.vectorEquals(correct, result);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        assertTrue(t);
+    }
+    
+    @Test
+    public void matrixMeanReturnsCorrectAnswer1() {
+        double[][] matrix ={{1,2,3},{4,5,6}};
+        double correct = 3.5;
+        double result = matop.meanOfMatrix(matrix);
+        assertTrue(result == correct);
+    }
+    
+    @Test
+    public void matrixMeanReturnsCorrectAnswer2() {
+        double[][] matrix ={{9,12,15},{19,26,33},{29,40,51}};
+        double correct = 26;
+        double result = matop.meanOfMatrix(matrix);
+        assertTrue(result == correct);
     }
 }
