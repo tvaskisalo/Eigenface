@@ -11,7 +11,7 @@ Java projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit 
 
 [Viikkoraportti 2.](https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/Viikkoraportti%202.md)
 
-[Viikkoraportti 3.] (https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/Viikkoraportti%203.md)
+[Viikkoraportti 3.](https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/Viikkoraportti%203.md)
 
 
 ## Komentorivitoimintoja
