@@ -11,8 +11,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -29,20 +27,20 @@ public class ImageProcessing {
     public void a() {
         int r = 25;
         File[] files = getTrainingImages();
-        double[][] wholeMatrix = new double[files.length][r*r];
+        double[][] wholeMatrix = new double[files.length][r * r];
         MatrixOperations matop = new MatrixOperations();
-        for(int i=0; i<files.length; i++) {
-            BufferedImage image = processImage(files[i],r,r);
+        for (int i = 0; i < files.length; i++) {
+            BufferedImage image = processImage(files[i], r, r);
             double[][] imageMatrix = imageToMatrix(image);
             double[] vector = matop.reshapeToVectorByRow(imageMatrix);
-            wholeMatrix[i]=vector;
+            wholeMatrix[i] = vector;
         } 
         double mean = matop.meanOfMatrix(wholeMatrix);
         wholeMatrix = matop.subtract(wholeMatrix, mean);
         try {
             System.out.println(wholeMatrix.length);
             System.out.println(wholeMatrix[0].length);
-            wholeMatrix = matop.multiply(wholeMatrix,matop.transpose(wholeMatrix));
+            wholeMatrix = matop.multiply(wholeMatrix, matop.transpose(wholeMatrix));
             
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -63,18 +61,18 @@ public class ImageProcessing {
             System.out.println(Arrays.toString(principalEigenvalues));
             System.out.println(Arrays.deepToString(principalEigenvectors));
             double[][] eigenface = new double[r][r];
-            for(int f=0; f<5; f++) {
-                int j=0;
-                int k =-1;
-                for(int i=0; i<r*r; i++) {
-                    if (i%r==0) {
+            for (int f = 0; f < 5; f++) {
+                int j = 0;
+                int k = -1;
+                for (int i = 0; i < r * r; i++) {
+                    if (i % r == 0) {
                         j = 0;
                         k++;
                     }
-                    eigenface[j][k] = principalEigenvectors[f][i]*100 + mean;
+                    eigenface[j][k] = principalEigenvectors[f][i] * 100 + mean;
                     j++;
                 }
-                matrixToImage(eigenface,r,r, ""+f);
+                matrixToImage(eigenface, r, r, "" + f);
             }
             
 
@@ -95,7 +93,7 @@ public class ImageProcessing {
         String extension = name.substring(indexOfExtension).toLowerCase();
         String[] imageExtensions = {".png", ".jpg", ".jpeg"};
         for (String e:imageExtensions) {
-            if(extension.equals(e)) {
+            if (extension.equals(e)) {
                 return true;
             }
         }
@@ -110,7 +108,7 @@ public class ImageProcessing {
             Image rescaledImg = img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
             BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
             output.getGraphics().drawImage(rescaledImg, 0, 0, null);
-            ImageIO.write(output, "png", new File("./images/ProcessedImages/"+image.getName()));
+            ImageIO.write(output, "png", new File("./images/ProcessedImages/" + image.getName()));
             return output;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -120,9 +118,9 @@ public class ImageProcessing {
     
     public double[][] imageToMatrix(BufferedImage image) {
         double[][] pixelMatrix = new double[image.getWidth()][image.getHeight()];
-        for (int i=0; i<image.getWidth(); i++) {
-            for (int j=0; j<image.getHeight(); j++) {
-                Color pixel = new Color(image.getRGB(i,j));
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                Color pixel = new Color(image.getRGB(i, j));
                 pixelMatrix[i][j] = pixel.getBlue();
             }
         }
@@ -131,15 +129,15 @@ public class ImageProcessing {
     
     public void matrixToImage(double[][] matrix, int width, int height, String name) {
         BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-        for(int i =0; i<matrix.length; i++) {
-            for(int j=0; j<matrix[0].length; j++) {
-                int value = (int)matrix[i][j];
-                Color c = new Color(value,value,value);
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                int value = (int) matrix[i][j];
+                Color c = new Color(value, value, value);
                 output.setRGB(i, j, c.getRGB());
             }
         }
         try {
-            ImageIO.write(output, "png", new File("./images/ProcessedImages/"+name+".png"));
+            ImageIO.write(output, "png", new File("./images/ProcessedImages/" + name + ".png"));
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
