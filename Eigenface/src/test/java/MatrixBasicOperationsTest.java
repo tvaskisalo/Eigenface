@@ -139,18 +139,17 @@ public class MatrixBasicOperationsTest {
     @Test 
     public void matrixSubtractionReturnsCorrectAnswer2() {
         double[][] matrixA = new double[100][100];
-        double[][] matrixB = new double[100][100];
+        double value = 21;
         double[][] result = new double[100][100];
         
         for(int i = 0; i<100; i++) {
             for(int j = 0; j<100; j++) {
                 matrixA[i][j]=(i+1)/(j+1);
-                matrixB[i][j]=i*j;
-                result[i][j]=(i+1)/(j+1) -i*j;
+                result[i][j]=(i+1)/(j+1) -21;
             }
         }
         try {
-            double[][] addition = matop.subtract(matrixA, matrixB);
+            double[][] addition = matop.subtract(matrixA, value);
             assertTrue(matop.matrixEquals(addition, result));            
         } catch(Exception e) {
             System.out.println(e.getMessage());
@@ -173,7 +172,7 @@ public class MatrixBasicOperationsTest {
     }
     
     @Test
-    public void matrixMultiplicationThrowsExceptionWithBadMatrixes() {
+    public void matrixMultiplicationThrowsExceptionWithBadMatrixes1() {
         double[][] matrixA = new double[10][100];
         double[][] matrixB = matrixA;
         
@@ -185,6 +184,21 @@ public class MatrixBasicOperationsTest {
         }
         assertTrue(caught);
     }
+    
+    @Test
+    public void matrixMultiplicationThrowsExceptionWithBadMatrixes2() {
+        double[][] matrixA = new double[10][100];
+        double[] vector = new double[5];
+        
+        boolean caught = false;
+        try {
+            matop.multiply(matrixA, vector);
+        } catch (Exception e) {
+            caught = true;
+        }
+        assertTrue(caught);
+    }
+    
     
     @Test
     public void matrixMultiplicationWithZeroMatrixReturnsZeroMatrix1() {
@@ -272,4 +286,21 @@ public class MatrixBasicOperationsTest {
         double result = matop.meanOfMatrix(matrix);
         assertTrue(result == correct);
     }
+    
+    @Test
+    public void matrixTransposeReturnsCorrectAnswer1() {
+        double[][] matrix ={{9,12,15},{19,26,33},{29,40,51}};
+        double[][] correct = {{9,19,29},{12,26,40},{15,33,51}};
+        double[][] result = matop.transpose(matrix);
+        assertTrue(matop.matrixEquals(correct, result));
+    }
+    
+    @Test
+    public void matrixTransposeReturnsCorrectAnswer2() {
+        double[][] matrix = {{1,2,3},{4,5,6}};
+        double[][] correct = {{1,4},{2,5},{3,6}};
+        double[][] result = matop.transpose(matrix);
+        assertTrue(matop.matrixEquals(correct, result));        
+    }
+    
 }

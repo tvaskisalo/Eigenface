@@ -10,18 +10,18 @@ import Jama.Matrix;
 
 /**
  * Luokalla voidaan laskea joitain matriisien peruslaskutoimituksia, sekä muuttamaan
- * matriisin vektoriksi ja vähentämään vektorista keskiarvon.
+ * matriisin vektoriksi ja vähentämään vektorista keskiarvon, sekä tekemään vähän kaikkea muutakin.
  * 
  */
 public class MatrixOperations {
     
     /**
-     * Metodiin annetaan kaksi matriisia ja se palauttaa matriisien summan.
+     * Metodiin annetaan kaksi matriisia ja se palauttaa matriisien erotuksen.
      * Metodi heittää poikkeuksen, jos matriisien rivien tai sarakkeiden määrä on eri.
      * 
      * @param matrixA Ensimmäinen matriisi
      * @param matrixB Toinen matriisi
-     * @return Metodi palauttaa matriisien summan
+     * @return Metodi palauttaa matriisien erotuksen
      * @throws Exception Toistaiseksi heittää geneerisen poikkeuksen, jos matriisit ovat eri muotoisia.
      */
     public double[][] subtract(double matrixA[][], double matrixB[][]) throws Exception {
@@ -38,10 +38,14 @@ public class MatrixOperations {
         
         return substraction;
     }
-    
+    /**
+     * Metodiin annetaan matriisi ja arvo. Metodi vähentää jokaisesta matriisin solusta annetun arvon.
+     * @param matrix Matriisi
+     * @param value Vähennettävä arvo
+     * @return Metodi palauttaa matriisin, josta on vähennettu annettu arvo.
+     */
     public double[][] subtract(double matrix[][], double value) {
         double[][] substraction = new double[matrix.length][matrix[0].length];
-        
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 substraction[i][j] = matrix[i][j] - value;
@@ -72,7 +76,13 @@ public class MatrixOperations {
         }
         return true;
     }
-    
+    /**
+     * Metodilla voidaan tarkistaa, ovatko vektorit samat. 
+     * Tein sivussa ns. "varmuuden vuoksi", jotta ei tarvitse käyttää Arrays-luokkaa.
+     * @param vectorA Ensimmäinen tarkasteltava vektori
+     * @param vectorB Toinen tarkasteltava vektori
+     * @return Palauttaa true, jos matriisit ovat samat, muulloin false.
+     */
     public boolean vectorEquals(double[] vectorA, double[] vectorB) {
         if (vectorA.length != vectorB.length) {
             return false;
@@ -110,7 +120,13 @@ public class MatrixOperations {
         }
         return result;
     }
-    
+    /**
+     * Metodi laskee annetun matriisin ja vektorin tulon kertomalla vektorin matriisilla.
+     * @param matrix Kerrottava matriisi
+     * @param vector Kerrottava vektori
+     * @return Palauttaa matriisitulon matrixA*matrixB
+     * @throws Exception Heittää poikkeuksen, jos matriisin sarakkeiden määrä ja vektorin pituus on eri.
+     */
     public double[] multiply(double matrix[][], double vector[]) throws Exception {
         if (matrix.length != vector.length) {
             throw new Exception("Incorrect dimensions");
@@ -150,6 +166,7 @@ public class MatrixOperations {
     
     /**
      * Metodi vähentää annetun vektorin termeistä vektroin termien keskiarvon.
+     * Tämä metodi on todennäköisesti turha. 
      * @param vector Laskentaan käytetty vektori
      * @return Palauttaa annetun vektorin, josta jokaisesta termistä on vähennetty vektorien termien keskiarvo.
      */
@@ -165,7 +182,11 @@ public class MatrixOperations {
         }
         return returnVector;
     }
-    
+    /**
+     * Metodi laskee matriisin arvojen keskiarvon, eli summaa kaikki matriisin alkiot ja jakaa ne alkioiden määrällä.
+     * @param matrix Matriisi
+     * @return Palauttaa matriisin arvojen keskiarvon.
+     */
     public double meanOfMatrix(double[][] matrix) {
         int count = matrix.length * matrix[0].length;
         double sum = 0;
@@ -176,7 +197,11 @@ public class MatrixOperations {
         }
         return sum / count;
     }
-    
+    /**
+     * Metodi ottaa argumenttina matriisin ja palauttaa sen transpoosin.
+     * @param matrix Transponoitava matriisi
+     * @return Matriisin transpoosi
+     */
     public double[][] transpose(double[][] matrix) {
         double[][] transpose = new double[matrix[0].length][matrix.length];
         
@@ -189,7 +214,13 @@ public class MatrixOperations {
         return transpose;
     }
     
-    
+    /**
+     * Metodilla voidaan laskea annetun matriisin ominaisarvot ja vektorit.
+     * Tällä hetkellä käytän valmista kirjastoa, mutta tarkoitus on tehdä oma toeutus seuravilla viikoilla.
+     * @param matrix Annettu matriisi
+     * @return Palauttaa kolmiulotteisen matriisin, jonka ensimmäinen alkio on diagonaalimatriisi ominaisarvoista 
+     * ja toinen alkio on matriisi, jonka sarakkeet ovat ominaisvektorit.
+     */
     public double[][][] eigen(double[][] matrix) {
         EigenvalueDecomposition eig = new EigenvalueDecomposition(new Matrix(matrix));
         double[][] eigValues = transpose(eig.getD().getArray());
@@ -198,6 +229,11 @@ public class MatrixOperations {
         return values;
     }
     
+    /**
+     * Metodi ottaa neliömatriisin diagonaalilla olevat arvot ja paluttaa ne vektorina.
+     * @param matrix Annettu neliömatriisi
+     * @return Diagonaalilla olevat arvot vektorina.
+     */
     public double[] getDiagonal(double[][] matrix) {
         double[] diagonal = new double[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
@@ -209,7 +245,14 @@ public class MatrixOperations {
         }
         return diagonal;
     }
-    
+    /**
+     * Metodilla järjestetään ominaisarvot laskevaan järjestykseen.
+     * Sitten annettu matriisi, jonka sarakkeet ovat vastaavat ominaisvektorit muutetaan samaan järjestykseen.
+     * Metodi vaatii refaktorointia ja optimointia, sillä se on hidas, epäselvä ja pitkä.
+     * @param matrix Matriisi, jonka sarakkeet ovat ominaisvektoreita.
+     * @param vector Vektori, jonka arvot ovat omainaisarvot.
+     * @return Palauttaa kolmiulotteisen matriisin, jonka ensimmäinen alkio on järjestetty matriisi ja toinen on taulukko, jossa on vektori ominaisarvoista.
+     */
     public double[][][] sortEigenvalue(double[][] matrix, double[] vector) {
         double[] sortedV = vector;
         for (int i = 1; i < vector.length; i++) {
@@ -222,9 +265,9 @@ public class MatrixOperations {
             }
         }
         int principal = calculatePrincipal(sortedV, 0.95);
-        double[][] sortedM = new double[principal + 1][matrix[0].length];
-        double[] eigen = new double[principal + 1];
-        for (int k = 0; k <= principal; k++) {
+        double[][] sortedM = new double[principal][matrix[0].length];
+        double[] eigen = new double[principal];
+        for (int k = 0; k < principal; k++) {
             double value = sortedV[k];
             eigen[k] = value;
             int index = 0;
@@ -239,23 +282,34 @@ public class MatrixOperations {
         
         return new double[][][] {sortedM, {eigen}};
     }
-    
-    public int calculatePrincipal(double[] sortedVector, double thresHold) {
+    /**
+     * Metodilla voidaan laskea, mitkä suurimmat ominaisarvot tarvitaan, 
+     * jotta se vastaa annetun prosentin ominaisarvojen summasta
+     * @param sortedEigenvalues Vektori, jossa on halutut ominaisarvot laskevassa järjestyksessä.
+     * @param thresHold Suhde, kuinka paljon ominaisarvioista halutaan.
+     * @return Palauttaa kokonaisluvun, kuinka monta ominaisarvoa tarvitaan.
+     */
+    public int calculatePrincipal(double[] sortedEigenvalues, double thresHold) {
         double sumAll = 0;
-        for (int i = 0; i < sortedVector.length; i++) {
-            sumAll += sortedVector[i];
+        for (int i = 0; i < sortedEigenvalues.length; i++) {
+            sumAll += sortedEigenvalues[i];
         }
         double sumPartial = 0;
-        for (int j = 0; j < sortedVector.length; j++) {
-            sumPartial += sortedVector[j];
+        for (int j = 0; j < sortedEigenvalues.length; j++) {
+            sumPartial += sortedEigenvalues[j];
             if (sumPartial / sumAll > thresHold) {
-                return j;
+                return j+1;
             }
         }
         
-        return sortedVector.length - 1;
+        return sortedEigenvalues.length;
     }
-    
+    /**
+     * Metodin avulla voidaan normalisoida matriisin sarakkeet ja palautetaan normitettu matriisi. 
+     * Metodi vaatii hieman refaktorointia.
+     * @param matrix Matriisi, jonka sarakkeet halutaan normittaa.
+     * @return Palauttaa normitetun matriisin.
+     */
     public double[][] normalizeVectors(double[][] matrix) {
         double[][] normalized = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
