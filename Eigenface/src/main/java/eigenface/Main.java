@@ -6,7 +6,11 @@
 package eigenface;
 
 import eigenface.logic.ImageProcessing;
-
+import Jama.Matrix;
+import Jama.QRDecomposition;
+import eigenface.logic.MatrixOperations;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 
 /**
@@ -19,5 +23,10 @@ public class Main {
     public static void main(String[] args) {
         ImageProcessing im = new ImageProcessing();
         im.a();
+    }
+    public static String tostring(Matrix m) {
+        StringWriter sw = new StringWriter();
+        m.print(new PrintWriter(sw, true), 8, 6);
+        return sw.toString();
     }
 }
