@@ -108,7 +108,7 @@ public class MatrixOperations {
         if (matrixA.length != matrixB[0].length) {
             throw new Exception("Incorrect matrix dimensions");
         }
-        double[][] result = new double[matrixA[0].length][matrixB.length];
+        double[][] result = new double[matrixB.length][matrixA[0].length];
         for (int i = 0; i < matrixA[0].length; i++) {
             for (int j = 0; j < matrixB.length; j++) {
                 double value = 0;
