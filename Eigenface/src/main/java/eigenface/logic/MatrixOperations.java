@@ -44,11 +44,11 @@ public class MatrixOperations {
      * @param value Vähennettävä arvo
      * @return Metodi palauttaa matriisin, josta on vähennettu annettu arvo.
      */
-    public double[][] subtract(double matrix[][], double value) {
+    public double[][] subtract(double matrix[][], double[] value) {
         double[][] substraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                substraction[i][j] = matrix[i][j] - value;
+                substraction[i][j] = matrix[i][j] - value[j];
             }
         }
         
@@ -187,15 +187,18 @@ public class MatrixOperations {
      * @param matrix Matriisi
      * @return Palauttaa matriisin arvojen keskiarvon.
      */
-    public double meanOfMatrix(double[][] matrix) {
-        int count = matrix.length * matrix[0].length;
-        double sum = 0;
+    public double[] meanOfMatrixByRow(double[][] matrix) {
+        int count = matrix.length;
+        double[] mean = new double[matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                sum += matrix[i][j];
+                mean[j] += matrix[i][j];
             }
         }
-        return sum / count;
+        for (int k = 0; k < mean.length; k++) {
+            mean[k] = mean[k]/count;
+        }
+        return mean;
     }
     /**
      * Metodi ottaa argumenttina matriisin ja palauttaa sen transpoosin.

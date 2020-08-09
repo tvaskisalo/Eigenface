@@ -139,7 +139,7 @@ public class MatrixBasicOperationsTest {
     @Test 
     public void matrixSubtractionReturnsCorrectAnswer2() {
         double[][] matrixA = new double[100][100];
-        double value = 21;
+        double[] value = new double[100];
         double[][] result = new double[100][100];
         
         for(int i = 0; i<100; i++) {
@@ -147,6 +147,7 @@ public class MatrixBasicOperationsTest {
                 matrixA[i][j]=(i+1)/(j+1);
                 result[i][j]=(i+1)/(j+1) -21;
             }
+            value[i] = 21;
         }
         try {
             double[][] addition = matop.subtract(matrixA, value);
@@ -274,17 +275,17 @@ public class MatrixBasicOperationsTest {
     @Test
     public void matrixMeanReturnsCorrectAnswer1() {
         double[][] matrix ={{1,2,3},{4,5,6}};
-        double correct = 3.5;
-        double result = matop.meanOfMatrix(matrix);
-        assertTrue(result == correct);
+        double[] correct = {2.5, 3.5, 4.5};
+        double[] result = matop.meanOfMatrixByRow(matrix);
+        assertTrue(matop.vectorEquals(correct, result));
     }
     
     @Test
     public void matrixMeanReturnsCorrectAnswer2() {
         double[][] matrix ={{9,12,15},{19,26,33},{29,40,51}};
-        double correct = 26;
-        double result = matop.meanOfMatrix(matrix);
-        assertTrue(result == correct);
+        double[] correct = {19,26, 33};
+        double[] result = matop.meanOfMatrixByRow(matrix);
+        assertTrue(matop.vectorEquals(correct, result));
     }
     
     @Test
