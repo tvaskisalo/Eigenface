@@ -55,6 +55,30 @@ public class MatrixOperations {
         return substraction;
     }
     
+    public double[] vectorSubtract(double vectorA[], double vectorB[]) throws Exception{
+        if (vectorA.length != vectorB.length) {
+            throw new Exception("incorrect vector lengths");
+        }
+        
+        double[] subtraction = new double[vectorA.length];
+        for(int i=0; i<vectorA.length; i++) {
+            subtraction[i] = vectorA[i]-vectorB[i];
+        }
+        
+        return subtraction;
+    }
+    
+    public double[] vectorAdd(double vectorA[], double vectorB[]) {
+        
+        
+        double[] subtraction = new double[vectorA.length];
+        for(int i=0; i<vectorA.length; i++) {
+            subtraction[i] = vectorA[i]+vectorB[i];
+        }
+        
+        return subtraction;
+    }
+    
     /**
      * Metodilla voidaan tarkistaa, onko matriisit samat. Pääosin vain testienkäyttöön
      * @param matrixA Ensimmäinen tarkasteltava matriisi
@@ -328,6 +352,46 @@ public class MatrixOperations {
         
         return normalized;
     }
+    
+    
+    public double[] weightVector(double[][] eigenvectors,  double[] meanAdjustedFace) {
+        try {
+            double[][] eigenTranspose = transpose(eigenvectors);
+            double[] weightVector = multiply(eigenTranspose, meanAdjustedFace);
+            return weightVector;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } 
+        return null;
+    }
+    
+    public double vectorLength(double vector[]) {
+        double dotProduct = 0;
+        for (int i=0; i<vector.length; i++) {
+            dotProduct = vector[i] * vector[i];
+        }
+        return Math.sqrt(dotProduct);
+    }
+    
+    public double[] vectorMultiply(double vector[], double value) {
+        double[] multiplication = new double[vector.length];
+        for (int i = 0; i<vector.length; i++) {
+            multiplication[i] = vector[i]*value;
+        }
+        return multiplication;
+    }
+    
+    public double[] projectionToFace(double[][] eigenvectors, double[] meanAdjustedFace) {
+        double[] value = new double[eigenvectors[0].length];
+        for (int i = 0; i<eigenvectors.length; i++) {
+            value = vectorAdd(value, vectorMultiply(eigenvectors[i],meanAdjustedFace[i]));
+        }
+        
+        return value;
+    }
+    
+    
+    
     
    
 }

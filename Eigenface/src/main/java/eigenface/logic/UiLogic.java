@@ -27,6 +27,7 @@ public class UiLogic {
     private double[][] innerEigenvectors;
     private double[][] covEigenvectors;
     private int size;
+    private double[][] principalEigenvectors;
 
     public UiLogic(int size) {
         this.size = size;
@@ -43,19 +44,35 @@ public class UiLogic {
         ProgressBar pb = new ProgressBar(0);
         info.setTop(processInfo);
         info.setCenter(pb);
-        imageToMatrixProgress(processInfo, pb);
+        imageToMatrixProgress(processInfo);
         System.out.println(dataMatrix.length +" "+dataMatrix[0].length);
-        meanFaceProgress(processInfo, pb);
-        innerProductProgress(processInfo, pb);
+        meanFaceProgress(processInfo);
+        innerProductProgress(processInfo);
         
-        eigenvaluesAndVectors(processInfo, pb);
-        normalizeEigenvectorsProcess(processInfo, pb);
-        sortEigenvectorsByEigenvaluesProcess(processInfo, pb);
+        eigenvaluesAndVectors(processInfo);
+        normalizeEigenvectorsProcess(processInfo);
+        sortEigenvectorsByEigenvaluesProcess(processInfo);
+        
+        File[] faces = imgProcess.getDetectableImages();
+        int t =0;
+        for (int i = 0; i<faces.length; i++) {
+            File f = faces[i];
+            double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f,size,size)));
+            boolean b = imageIsAFace(principalEigenvectors,faceVector, meanface, 80);
+            if (i == 99) {
+                System.out.println("Faces found: "+t/100.0);
+                t=0;
+            }
+            if(b) {
+                t++;
+            }
+        }
+        System.out.println("Failed: " + t/56.0);
+        
     }
     
-    public void imageToMatrixProgress(Label processInfo, ProgressBar pb) {
+    public void imageToMatrixProgress(Label processInfo) {
         processInfo.setText("Converting images to a matrix...");
-        pb.setProgress(0);
         double unit = 100/files.length;
         for (int i = 0; i < files.length; i++) {
             //Muutetaan kuva kokoon r x r, sekä mustavalkoiseksi
@@ -65,13 +82,11 @@ public class UiLogic {
             double[] vector = matop.reshapeToVectorByRow(imageMatrix);
             //Lisätään vektori osaksi matriisia, jossa on kaikki kuvat
             dataMatrix[i] = vector;
-            pb.setProgress(pb.getProgress()+unit);
         }
     }
     
-    public void meanFaceProgress(Label processInfo, ProgressBar pb) {
+    public void meanFaceProgress(Label processInfo) {
         processInfo.setText("Calculating meanface...");
-        pb.setProgress(0);
         meanface = matop.meanOfMatrixByRow(dataMatrix);
         dataMatrix = matop.subtract(dataMatrix, meanface);
         
@@ -87,10 +102,9 @@ public class UiLogic {
             col++;
         }
         imgProcess.matrixToImage(meanf, size, size, "meanface");
-        pb.setProgress(100);
     }
     
-    public void eigenvaluesAndVectors(Label processInfo, ProgressBar pb) {
+    public void eigenvaluesAndVectors(Label processInfo) {
         double[][][] values = matop.eigen(innerproductData);
         //Otetaan ominaisarvot diagonaalista.
         eigenvalues = matop.getDiagonal(values[0]);
@@ -105,11 +119,9 @@ public class UiLogic {
             ex.printStackTrace(System.out);
             System.out.println("eigen");
         }
-        pb.setProgress(100);
     }
     
-    public void innerProductProgress(Label processInfo, ProgressBar pb) {
-        pb.setProgress(0);
+    public void innerProductProgress(Label processInfo) {
         processInfo.setText("Calculating innerproduct...");
         try {
             //Kerrotaan matriisi sen transpoosilla. Halutaan oikeasti tutkia matriisin transpoosin ja matriisin tuloa.
@@ -122,23 +134,35 @@ public class UiLogic {
             System.out.println(ex.getMessage());
             System.out.println("inner");
         }
-        pb.setProgress(100);
     }
         
-    public void normalizeEigenvectorsProcess(Label processInfo, ProgressBar pb) {
-        pb.setProgress(0);
+    public void normalizeEigenvectorsProcess(Label processInfo) {
         processInfo.setText("Normalizing eigenvectors...");
         covEigenvectors = matop.normalizeVectors(covEigenvectors);
-        pb.setProgress(100);
     }
     
-    public void sortEigenvectorsByEigenvaluesProcess(Label processInfo, ProgressBar pb) {
-        pb.setProgress(0);
+    public void sortEigenvectorsByEigenvaluesProcess(Label processInfo) {
         processInfo.setText("Sorting eigenvectors by eigenvalues");
         double[][][] sortedValues = matop.sortEigenvalue(covEigenvectors, eigenvalues);
         double[] principalEigenvalues = sortedValues[1][0];
-        double[][] principalEigenvectors = sortedValues[0];
-        pb.setProgress(100);
+        principalEigenvectors = sortedValues[0];
+    }
+    
+    public boolean imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace, double threshold) {
+        try {
+            double[] meanAdjustedFace = matop.vectorSubtract(imageVector, meanFace);
+            double[] weightVector = matop.projectionToFace(eigenFaces, meanAdjustedFace);
+            double[] subtraction = matop.vectorSubtract(meanAdjustedFace, weightVector);
+            double length = matop.vectorLength(subtraction);
+            if (length < threshold) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
     
     

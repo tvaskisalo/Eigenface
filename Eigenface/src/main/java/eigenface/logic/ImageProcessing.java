@@ -29,6 +29,11 @@ public class ImageProcessing {
         return directory.listFiles();
     }
     
+    public File[] getDetectableImages() {
+        File directory = new File("./images/DetectFaces");
+        return directory.listFiles();
+    }
+    
     /**
      * Metodilla voidaan tarkistaa, onko annettu tiedosto kuvatiedosto vai ei.
      * @param file Tarkisteltava tiedosto
@@ -112,4 +117,6 @@ public class ImageProcessing {
             System.out.println(ex.getMessage());
         }
     }
+    
+    
 }
