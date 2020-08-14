@@ -4,6 +4,7 @@ Java projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit 
 ## Dokumentointi
 
 [Määrittelydokumentti](https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/M%C3%A4%C3%A4rittelydokumentti.md)
+[Toteutusdokumentti](https://github.com/tvaskisalo/Eigenface/blob/master/Dokumentaatio/Toteutusdokumentti.md)
 
 ### Viikkoraportit
 
