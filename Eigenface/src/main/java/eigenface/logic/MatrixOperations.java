@@ -62,14 +62,14 @@ public class MatrixOperations {
      * @throws Exception Vektorit ovat eri pituiset
      */
     
-    public double[] vectorSubtract(double vectorA[], double vectorB[]) throws Exception{
+    public double[] vectorSubtract(double vectorA[], double vectorB[]) throws Exception {
         if (vectorA.length != vectorB.length) {
             throw new Exception("incorrect vector lengths");
         }
         
         double[] subtraction = new double[vectorA.length];
-        for(int i=0; i<vectorA.length; i++) {
-            subtraction[i] = vectorA[i]-vectorB[i];
+        for (int i = 0; i < vectorA.length; i++) {
+            subtraction[i] = vectorA[i] - vectorB[i];
         }
         
         return subtraction;
@@ -82,14 +82,14 @@ public class MatrixOperations {
      * @return Palauttaa vektorien summan.
      * @throws Exception Vektorit ovat eri pituiset
      */
-    public double[] vectorAdd(double vectorA[], double vectorB[]) throws Exception{
+    public double[] vectorAdd(double vectorA[], double vectorB[]) throws Exception {
         if (vectorA.length != vectorB.length) {
             throw new Exception("incorrect vector lengths");
         }
         
         double[] subtraction = new double[vectorA.length];
-        for(int i=0; i<vectorA.length; i++) {
-            subtraction[i] = vectorA[i]+vectorB[i];
+        for (int i = 0; i < vectorA.length; i++) {
+            subtraction[i] = vectorA[i] + vectorB[i];
         }
         
         return subtraction;
@@ -236,7 +236,7 @@ public class MatrixOperations {
             }
         }
         for (int k = 0; k < mean.length; k++) {
-            mean[k] = mean[k]/count;
+            mean[k] = mean[k] / count;
         }
         return mean;
     }
@@ -341,7 +341,7 @@ public class MatrixOperations {
         for (int j = 0; j < sortedEigenvalues.length; j++) {
             sumPartial += sortedEigenvalues[j];
             if (sumPartial / sumAll > thresHold) {
-                return j+1;
+                return j + 1;
             }
         }
         
@@ -376,7 +376,7 @@ public class MatrixOperations {
      */
     public double vectorLength(double vector[]) {
         double dotProduct = 0;
-        for (int i=0; i<vector.length; i++) {
+        for (int i = 0; i < vector.length; i++) {
             dotProduct = vector[i] * vector[i];
         }
         return Math.sqrt(dotProduct);
@@ -389,8 +389,8 @@ public class MatrixOperations {
      */
     public double[] vectorMultiply(double vector[], double value) {
         double[] multiplication = new double[vector.length];
-        for (int i = 0; i<vector.length; i++) {
-            multiplication[i] = vector[i]*value;
+        for (int i = 0; i < vector.length; i++) {
+            multiplication[i] = vector[i] * value;
         }
         return multiplication;
     }
@@ -404,9 +404,9 @@ public class MatrixOperations {
      */
     public double[] projectionToFace(double[][] eigenvectors, double[] meanAdjustedFace) {
         double[] value = new double[eigenvectors[0].length];
-        for (int i = 0; i<eigenvectors.length; i++) {
+        for (int i = 0; i < eigenvectors.length; i++) {
             try {
-                value = vectorAdd(value, vectorMultiply(eigenvectors[i],meanAdjustedFace[i]));
+                value = vectorAdd(value, vectorMultiply(eigenvectors[i], meanAdjustedFace[i]));
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

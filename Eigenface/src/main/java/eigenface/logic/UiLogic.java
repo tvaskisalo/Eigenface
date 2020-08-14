@@ -51,30 +51,26 @@ public class UiLogic {
         info.setTop(processInfo);
         info.setCenter(pb);
         imageToMatrixProgress(processInfo);
-        System.out.println(dataMatrix.length +" "+dataMatrix[0].length);
         meanFaceProgress(processInfo);
         innerProductProgress(processInfo);
-        
         eigenvaluesAndVectors(processInfo);
         normalizeEigenvectorsProcess(processInfo);
         sortEigenvectorsByEigenvaluesProcess(processInfo);
-        
         File[] faces = imgProcess.getDetectableImages();
-        int t =0;
-        for (int i = 0; i<faces.length; i++) {
+        int t = 0;
+        for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
-            double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f,size,size)));
-            boolean b = imageIsAFace(principalEigenvectors,faceVector, meanface, 80);
+            double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
+            boolean b = imageIsAFace(principalEigenvectors, faceVector, meanface, 80);
             if (i == 99) {
-                System.out.println("Faces found: "+t/100.0);
-                t=0;
+                System.out.println("Faces found: " + t / 100.0);
+                t = 0;
             }
-            if(b) {
+            if (b) {
                 t++;
             }
         }
-        System.out.println("Failed: " + t/56.0);
-        
+        System.out.println("Failed: " + t / 56.0);
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
@@ -82,7 +78,6 @@ public class UiLogic {
      */
     private void imageToMatrixProgress(Label processInfo) {
         processInfo.setText("Converting images to a matrix...");
-        double unit = 100/files.length;
         for (int i = 0; i < files.length; i++) {
             //Muutetaan kuva kokoon r x r, sekä mustavalkoiseksi
             BufferedImage image = imgProcess.processImage(files[i], size, size);
@@ -126,15 +121,12 @@ public class UiLogic {
         //Otetaan ominaisarvot diagonaalista.
         eigenvalues = matop.getDiagonal(values[0]);
         innerEigenvectors = values[1];
-        System.out.println("Eigenvector "+innerEigenvectors[0].length+" "+innerEigenvectors.length);
-        System.out.println("Datamatrix " +dataMatrix[0].length+" "+dataMatrix.length);
         try {
             //Kerrotaan ominaisvektorit alkuperäisellä matriisilla, jotta saadaan kovarianssimatriisin ominaisarvot.
             covEigenvectors = matop.multiply(dataMatrix, innerEigenvectors);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace(System.out);
-            System.out.println("eigen");
         }
     }
     /**
@@ -144,10 +136,9 @@ public class UiLogic {
     private void innerProductProgress(Label processInfo) {
         processInfo.setText("Calculating innerproduct...");
         try {
-            innerproductData = matop.multiply(matop.transpose(dataMatrix),dataMatrix);
+            innerproductData = matop.multiply(matop.transpose(dataMatrix), dataMatrix);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            System.out.println("inner");
         }
     }
     /**

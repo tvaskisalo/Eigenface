@@ -26,11 +26,11 @@ public class Main {
         Scanner input = new Scanner(System.in);
         System.out.println("Type 1 for text ui and 2 for graphical ui");
         String uiChoice = input.nextLine();
-        if(uiChoice.equals("1")) {
+        if (uiChoice.equals("1")) {
             ImageProcessing im = new ImageProcessing();
             File directory = new File("./images/InputImages");
             BufferedImage img = ImageIO.read(directory.listFiles()[0]);
-            im.matrixToImage(im.imageToMatrix(img),128,128,"a");
+            im.matrixToImage(im.imageToMatrix(img), 128, 128, "a");
         } else if (uiChoice.equals("2")) {
             Ui.main(args);            
         }

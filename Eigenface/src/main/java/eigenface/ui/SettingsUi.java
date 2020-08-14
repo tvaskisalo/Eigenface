@@ -19,7 +19,7 @@ import javafx.stage.Stage;
  */
 public class SettingsUi {
     
-    public void setSettingsUi (Stage stage) {
+    public void setSettingsUi(Stage stage) {
         BorderPane background = new BorderPane();
         GridPane settings = new GridPane();
         background.setCenter(settings);
