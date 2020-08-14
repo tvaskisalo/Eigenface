@@ -54,6 +54,13 @@ public class MatrixOperations {
         
         return substraction;
     }
+    /**
+     * Metodiin annetaan kaksi vektoria ja se palauttaa niiden erotuksen ja heittää poikkeuksen, jos vektorit ovat eri pituisia.
+     * @param vectorA Vektori, josta vähennetään
+     * @param vectorB Vektori, jolla vähennetään
+     * @return Palauttaa erotuksen
+     * @throws Exception Vektorit ovat eri pituiset
+     */
     
     public double[] vectorSubtract(double vectorA[], double vectorB[]) throws Exception{
         if (vectorA.length != vectorB.length) {
@@ -68,8 +75,17 @@ public class MatrixOperations {
         return subtraction;
     }
     
-    public double[] vectorAdd(double vectorA[], double vectorB[]) {
-        
+    /**
+     * Metodiin annetaan kaksi vektoria ja se palauttaa niiden summan ja heittää poikkeuksen, jos vektorit ovat eri pituisia.
+     * @param vectorA Ensimmäinen vektori
+     * @param vectorB Toinen vektori
+     * @return Palauttaa vektorien summan.
+     * @throws Exception Vektorit ovat eri pituiset
+     */
+    public double[] vectorAdd(double vectorA[], double vectorB[]) throws Exception{
+        if (vectorA.length != vectorB.length) {
+            throw new Exception("incorrect vector lengths");
+        }
         
         double[] subtraction = new double[vectorA.length];
         for(int i=0; i<vectorA.length; i++) {
@@ -353,18 +369,11 @@ public class MatrixOperations {
         return normalized;
     }
     
-    
-    public double[] weightVector(double[][] eigenvectors,  double[] meanAdjustedFace) {
-        try {
-            double[][] eigenTranspose = transpose(eigenvectors);
-            double[] weightVector = multiply(eigenTranspose, meanAdjustedFace);
-            return weightVector;
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        } 
-        return null;
-    }
-    
+    /**
+     * Metodiin annetaan vektori ja se palauttaa vektorin pituuden
+     * @param vector Haluttu vektori
+     * @return vektorin pituus
+     */
     public double vectorLength(double vector[]) {
         double dotProduct = 0;
         for (int i=0; i<vector.length; i++) {
@@ -372,7 +381,12 @@ public class MatrixOperations {
         }
         return Math.sqrt(dotProduct);
     }
-    
+    /**
+     * Metodi laskee annetun vektorin ja luvun tulon
+     * @param vector Haluttu vektori
+     * @param value Luku, jolla kerrotaan
+     * @return Palauttaa luvulla skaalatun vektorin
+     */
     public double[] vectorMultiply(double vector[], double value) {
         double[] multiplication = new double[vector.length];
         for (int i = 0; i<vector.length; i++) {
@@ -381,10 +395,21 @@ public class MatrixOperations {
         return multiplication;
     }
     
+    /**
+     * Metodi projektoi vektorin meanAdjustedFace, joka on kuvavektori, josta on otettu pois keskiarvoinen kuvavektori,
+     * ominaisvektoreiden viritämälle vektoriavaruudelle.
+     * @param eigenvectors Matriisi, jossa on sarakkeina ominaisarvot
+     * @param meanAdjustedFace kuvavektori, josta on otettu pois keskiarvoinen kuvavektori
+     * @return Palauttaa projektion
+     */
     public double[] projectionToFace(double[][] eigenvectors, double[] meanAdjustedFace) {
         double[] value = new double[eigenvectors[0].length];
         for (int i = 0; i<eigenvectors.length; i++) {
-            value = vectorAdd(value, vectorMultiply(eigenvectors[i],meanAdjustedFace[i]));
+            try {
+                value = vectorAdd(value, vectorMultiply(eigenvectors[i],meanAdjustedFace[i]));
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
         }
         
         return value;

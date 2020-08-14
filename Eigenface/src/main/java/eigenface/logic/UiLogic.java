@@ -7,14 +7,13 @@ package eigenface.logic;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Arrays;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 
 /**
- *
- * @author Tapan
+ * Luokalla voidaan suorittaa eigenface-prosessin eri vaiheita, sekä näyttää niitä käyttöliittymälle.
+ * 
  */
 public class UiLogic {
     private File[] files;
@@ -29,6 +28,10 @@ public class UiLogic {
     private int size;
     private double[][] principalEigenvectors;
 
+    /**
+     * Konstuktorille annetaan kuvan koko ja se asettaa tarvittavat muuttujat sen mukaan.
+     * @param size Kuvan koko (size x size)
+     */
     public UiLogic(int size) {
         this.size = size;
         imgProcess = new ImageProcessing();
@@ -38,7 +41,10 @@ public class UiLogic {
         innerproductData = new double[files.length][files.length];
     }
     
-    
+    /**
+     * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
+     * @param info Palauttaa BorderPane-olion, jossa on kyseisestä vaiheesta tietoa.
+     */
     public void generateEigenface(BorderPane info) {
         Label processInfo = new Label("");
         ProgressBar pb = new ProgressBar(0);
@@ -70,8 +76,11 @@ public class UiLogic {
         System.out.println("Failed: " + t/56.0);
         
     }
-    
-    public void imageToMatrixProgress(Label processInfo) {
+    /**
+     * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
+     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     */
+    private void imageToMatrixProgress(Label processInfo) {
         processInfo.setText("Converting images to a matrix...");
         double unit = 100/files.length;
         for (int i = 0; i < files.length; i++) {
@@ -84,12 +93,16 @@ public class UiLogic {
             dataMatrix[i] = vector;
         }
     }
-    
-    public void meanFaceProgress(Label processInfo) {
+    /**
+     * Metodi laskee keskiarvonaaman ja vähentää sen kaikista naama-vektoreista
+     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     */
+    private void meanFaceProgress(Label processInfo) {
         processInfo.setText("Calculating meanface...");
         meanface = matop.meanOfMatrixByRow(dataMatrix);
         dataMatrix = matop.subtract(dataMatrix, meanface);
         
+        /* Seuraava koodi on vain ja ainoastaan keskivertonaaman tulostamiseksi kuvaksi
         double[][] meanf = new double[size][size];
         int row =-1;
         int col =0;
@@ -102,9 +115,13 @@ public class UiLogic {
             col++;
         }
         imgProcess.matrixToImage(meanf, size, size, "meanface");
+        */
     }
-    
-    public void eigenvaluesAndVectors(Label processInfo) {
+    /**
+     * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon ominaisarvot ja -vektorit
+     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     */
+    private void eigenvaluesAndVectors(Label processInfo) {
         double[][][] values = matop.eigen(innerproductData);
         //Otetaan ominaisarvot diagonaalista.
         eigenvalues = matop.getDiagonal(values[0]);
@@ -120,35 +137,51 @@ public class UiLogic {
             System.out.println("eigen");
         }
     }
-    
-    public void innerProductProgress(Label processInfo) {
+    /**
+     * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon
+     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     */
+    private void innerProductProgress(Label processInfo) {
         processInfo.setText("Calculating innerproduct...");
         try {
-            //Kerrotaan matriisi sen transpoosilla. Halutaan oikeasti tutkia matriisin transpoosin ja matriisin tuloa.
-            //Kuitenkin asetan tähän sen "väärin päin", sillä kuvien käsittelyssä ja valmiiksi toteutetussa Jama-kirjastossa rivit ja sarakkeet ovat eripäin.
-            //Tällöin Jama-kirjastoa kutuessa, se käyttää tässä tapauksessa annetun matriisin transpoosia.
-            //Näin voidaan tehdä, koska (AA^T)*T = A^T A
-            //Kikka tehdään, jotta ei tarvitsisi laskea kovarianssimatriisia.
             innerproductData = matop.multiply(matop.transpose(dataMatrix),dataMatrix);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             System.out.println("inner");
         }
     }
-        
-    public void normalizeEigenvectorsProcess(Label processInfo) {
+    /**
+     * Metodi normalisoi kaikki covarianssimatriisin ominaisvektorit
+     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     */    
+    private void normalizeEigenvectorsProcess(Label processInfo) {
         processInfo.setText("Normalizing eigenvectors...");
         covEigenvectors = matop.normalizeVectors(covEigenvectors);
     }
     
-    public void sortEigenvectorsByEigenvaluesProcess(Label processInfo) {
+    /**
+     * Metodi järjestää covarianssimatriisin ominaisvektorit vastaamaan niiden ominaisarvojen suuruusjärjestystä laskevasti.
+     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     */
+    private void sortEigenvectorsByEigenvaluesProcess(Label processInfo) {
         processInfo.setText("Sorting eigenvectors by eigenvalues");
         double[][][] sortedValues = matop.sortEigenvalue(covEigenvectors, eigenvalues);
-        double[] principalEigenvalues = sortedValues[1][0];
         principalEigenvectors = sortedValues[0];
     }
     
-    public boolean imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace, double threshold) {
+    /**
+     * Metodilla voidaan tutkia onko annetussa kuvavektorissa naama vai ei. 
+     * Tämän se tekee käyttämällä faktaa, että yleensä ottaen, jos kuvassa on kasvot, niin siitä tehty matriisi ei muutu paljoa, 
+     * kun se projektoidaan "naama"-avaruuten kuvamatriisin kovarianssimatriisin ominaisarvojen perusteella.
+     * Tällä hetkellä metodin tunnistaa kasvot noin 80% ajasta, kun kuvassa on naama ja
+     * tunnistaa noin 70% ajasta, että kuvassa ei ole naamaa, jos siinä ei ole naama silloin, kun threshold on 85 ja kuvankoko on 100x100
+     * @param eigenFaces Kuvamatriisin kovarianssimatriisin ominaisarvot
+     * @param imageVector Tutkittava kuvavektori
+     * @param meanFace Keskiverto naamavektori
+     * @param threshold Määrä, jonka perusteella määritellään onko kasvot vai ei. 
+     * @return 
+     */
+    private boolean imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace, double threshold) {
         try {
             double[] meanAdjustedFace = matop.vectorSubtract(imageVector, meanFace);
             double[] weightVector = matop.projectionToFace(eigenFaces, meanAdjustedFace);

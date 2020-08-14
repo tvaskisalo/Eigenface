@@ -22,13 +22,18 @@ public class ImageProcessing {
     
     /**
      * Metodilla voidaan tuoda kuvia kansiosta "./images/InputImages"
+     * Nämä ovat harjoituskuvia ja pitäisi olla vain kasvoja.
      * @return Palauttaa listan kuvista.
      */
     public File[] getTrainingImages() {
         File directory = new File("./images/InputImages");
         return directory.listFiles();
     }
-    
+    /**
+     * Metodilla voidaan tuoda kuvia kansiosta "./images/DetectFaces".
+     * Nämä kuvat ovat tunnistettavia kuvia.
+     * @return Palauttaa listan kuvista.
+     */
     public File[] getDetectableImages() {
         File directory = new File("./images/DetectFaces");
         return directory.listFiles();
