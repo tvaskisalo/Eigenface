@@ -28,15 +28,15 @@ public class MatrixOperations {
         if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
             throw new Exception("Incorrect matrix dimensions");
         }
-        double[][] substraction = new double[matrixA.length][matrixA[0].length];
+        double[][] subtraction = new double[matrixA.length][matrixA[0].length];
         
         for (int i = 0; i < matrixA.length; i++) {
             for (int j = 0; j < matrixA[0].length; j++) {
-                substraction[i][j] = matrixA[i][j] - matrixB[i][j];
+                subtraction[i][j] = matrixA[i][j] - matrixB[i][j];
             }
         }
         
-        return substraction;
+        return subtraction;
     }
     /**
      * Metodiin annetaan matriisi ja arvo. Metodi vähentää jokaisesta matriisin solusta annetun arvon.
@@ -45,14 +45,24 @@ public class MatrixOperations {
      * @return Metodi palauttaa matriisin, josta on vähennettu annettu arvo.
      */
     public double[][] subtract(double matrix[][], double[] value) {
-        double[][] substraction = new double[matrix.length][matrix[0].length];
+        double[][] subtraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                substraction[i][j] = matrix[i][j] - value[j];
+                subtraction[i][j] = matrix[i][j] - value[j];
             }
         }
         
-        return substraction;
+        return subtraction;
+    }
+    public double[][] subtract(double matrix[][], double value) {
+        double[][] subtraction = new double[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                subtraction[i][j] = matrix[i][j] - value;
+            }
+        }
+        
+        return subtraction;
     }
     /**
      * Metodiin annetaan kaksi vektoria ja se palauttaa niiden erotuksen ja heittää poikkeuksen, jos vektorit ovat eri pituisia.
@@ -183,6 +193,22 @@ public class MatrixOperations {
         return result;
     }
     
+    public double[] multiply(double vector[], double matrix[][]) throws Exception {
+        if (matrix[0].length != vector.length) {
+            throw new Exception("Incorrect dimensions");
+        }
+        double[] result = new double[matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            double value = 0;
+            for (int k = 0; k < vector.length; k++) {
+                value += matrix[i][k] * vector[k];
+            }
+            result[i] = value;
+            
+        }
+        return result;
+    }
+    
     
     
     /**
@@ -202,6 +228,18 @@ public class MatrixOperations {
             }
         }
         return vector;
+    }
+    
+    public double[] divideVectorWithValue(double[] vector, double value) throws Exception {
+        if (value == 0) {
+            throw new Exception("Can't divide by zero");
+        }
+        double[] returnVec = new double[vector.length];
+        for(int i =0; i<vector.length; i++) {
+            returnVec[i] = vector[i]/value;
+        }
+        
+        return returnVec;
     }
     
     /**
@@ -376,11 +414,14 @@ public class MatrixOperations {
      */
     public double vectorLength(double vector[]) {
         double dotProduct = 0;
-        for (int i = 0; i < vector.length; i++) {
-            dotProduct = vector[i] * vector[i];
+        try {
+            dotProduct = dotproduct(vector, vector);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         return Math.sqrt(dotProduct);
     }
+    
     /**
      * Metodi laskee annetun vektorin ja luvun tulon
      * @param vector Haluttu vektori
@@ -413,6 +454,91 @@ public class MatrixOperations {
         }
         
         return value;
+    }
+    
+    
+    /**
+     * Metodi vähentää tietyn ominaisarvo ja -vektorin vaikutusta matriisissa, 
+     * jotta se ei tule vastaan uudelleen power-iteroinnissa.
+     * @param matrix Tutkittava matriisi
+     * @param eigenvalue Matriisin ominaisarvo
+     * @param eigenvector Vastaava ominaisvektori
+     * @return Palauttaa matriisin, josta on vähennetty ominaisarvon vaikutusta
+     */
+    public double[][] reduceEigenPairImpact(double matrix[][], double eigenvalue, double eigenvector[]) {
+        double length = vectorLength(eigenvector);
+        double dotproduct = length*length;
+        
+        return subtract(matrix, eigenvalue*dotproduct);
+    }
+    /**
+     * Metodi etsii suurimman ominaisarvon ja sitä vastaavan ominaisvektorin.
+     * @param matrix Tutkittava matriisi
+     * @param epsilon Raja, kuinka lähellä ominaisvektorin pitää olla
+     * @param maxIterations Maksimi määrä kuinka monta iteraatiota tehdään.
+     * @return Palauttaa matriisin, jossa ensimmäisellä sarakkeella on ominaisvektori ja toisella ominaisarvo.
+     */
+    public double[] powerIterate(double matrix[][], double epsilon, int maxIterations) {
+        double[] x0 = new double[matrix.length];
+        for (int i=0; i<matrix.length; i++) {
+            x0[i] = 1;
+        }
+        try {
+            double[] x1 = divideVectorWithValue(multiply(matrix, x0), vectorLength(x0));
+            int iterations = 1;
+            while(vectorLength(vectorSubtract(x1, x0)) > epsilon && iterations < maxIterations) {
+                x0 = x1;
+                x1 = divideVectorWithValue(multiply(matrix, x0), vectorLength(x0));
+                iterations++;
+            }
+            return x1;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } 
+        
+        return null;
+    }
+    /**
+     * Metodi laskee ominaisarvon matriisin ja vastaavan ominaisvektorin avulla
+     * @param matrix Tutkittava matriisi
+     * @param eigenvector Ominaisarvon ominaisvektori
+     * @return Palauttaa ominaisarvon
+     */
+    public double calculateEigenvalue(double matrix[][], double eigenvector[]) {
+        try {
+            double[] xTm = multiply(eigenvector, matrix);
+            double eigenValue = dotproduct(xTm, eigenvector);
+            return eigenValue;
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        return 0;
+    }
+    /**
+     * Metodi laskee kahden vektorin pistetulon
+     * @param vectorA Ensimmäinen vektori
+     * @param vectorB Toinen vektori
+     * @return Palauttaa pistetulon
+     * @throws Exception Heittää poikkeuksen, jos vektorit ovat eri kokoisia.
+     */
+    public double dotproduct(double vectorA[], double vectorB[]) throws Exception {
+        if(vectorA.length != vectorB.length) {
+            throw new Exception("Vector lengths are different");
+        }
+        double dot = 0;
+        for (int i = 0; i<vectorA.length; i++) {
+            dot += vectorA[i]*vectorB[i];
+        }
+        return dot;
+    }
+    
+    public double[] roundVectorTo4Decimals(double[] vector) {
+        double[] roundedVector = new double[vector.length];
+        for (int i=0; i<vector.length; i++) {
+            roundedVector[i] = Math.round(vector[i]*10000)/10000.0;
+        }
+        
+        return roundedVector;
     }
     
     

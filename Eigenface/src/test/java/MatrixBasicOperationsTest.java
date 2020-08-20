@@ -1,5 +1,6 @@
 
 import eigenface.logic.MatrixOperations;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -150,12 +151,34 @@ public class MatrixBasicOperationsTest {
             value[i] = 21;
         }
         try {
-            double[][] addition = matop.subtract(matrixA, value);
-            assertTrue(matop.matrixEquals(addition, result));            
+            double[][] subtraction = matop.subtract(matrixA, value);
+            assertTrue(matop.matrixEquals(subtraction, result));            
         } catch(Exception e) {
             System.out.println(e.getMessage());
             assertTrue(false);
         }
+    }
+    
+    @Test 
+    public void matrixSubtractionReturnsCorrectAnswer3() {
+        double[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};
+        double value = 2;
+        
+        double[][] correct = {{-1,0,1},{2,3,4},{5,6,7}};
+        
+        double[][] substraction = matop.subtract(matrix, value);
+        assertTrue(matop.matrixEquals(correct, substraction));
+    }
+    
+    @Test 
+    public void matrixSubtractionReturnsCorrectAnswer4() {
+        double[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};
+        double value = -5;
+        
+        double[][] correct = {{6,7,8},{9,10,11},{12,13,14}};
+        
+        double[][] substraction = matop.subtract(matrix, value);
+        assertTrue(matop.matrixEquals(correct, substraction));
     }
     
     
@@ -194,6 +217,20 @@ public class MatrixBasicOperationsTest {
         boolean caught = false;
         try {
             matop.multiply(matrixA, vector);
+        } catch (Exception e) {
+            caught = true;
+        }
+        assertTrue(caught);
+    }
+    
+    @Test
+    public void matrixMultiplicationThrowsExceptionWithBadMatrixes3() {
+        double[][] matrixA = new double[10][100];
+        double[] vector = new double[5];
+        
+        boolean caught = false;
+        try {
+            matop.multiply(vector, matrixA);
         } catch (Exception e) {
             caught = true;
         }
@@ -273,6 +310,22 @@ public class MatrixBasicOperationsTest {
     }
     
     @Test
+    public void matrixMultiplicationReturnsCorrectAnswer4() {
+        double[][] matrixA = {{1,2,3},{4,5,6}};
+        double[] vector = {1,2,3};
+        double[] correct = {14,32};
+        boolean t = false;
+        try {
+            double[] result = matop.multiply(vector,matrixA);
+            t=matop.vectorEquals(correct, result);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        assertTrue(t);
+        
+    }
+    
+    @Test
     public void matrixMeanReturnsCorrectAnswer1() {
         double[][] matrix ={{1,2,3},{4,5,6}};
         double[] correct = {2.5, 3.5, 4.5};
@@ -302,6 +355,208 @@ public class MatrixBasicOperationsTest {
         double[][] correct = {{1,4},{2,5},{3,6}};
         double[][] result = matop.transpose(matrix);
         assertTrue(matop.matrixEquals(correct, result));        
+    }
+    
+    @Test
+    public void dotproductReturnsCorrectAnswer1() {
+        double[] vectorA = {1,2,3};
+        double[] vectorB = {4,5,6};
+        double correct = 32;
+        try {
+            double result = matop.dotproduct(vectorA, vectorB);
+            assertTrue(correct == result);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void dotproductReturnsCorrectAnswer2() {
+        double[] vectorA = {1,2,3,4,5,6,7,8,9};
+        double[] vectorB = vectorA;
+        double correct = 285;
+        try {
+            double result = matop.dotproduct(vectorA, vectorB);
+            assertTrue(correct == result);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void dotproductThrowsException() {
+        double[] vectorA={1,2};
+        double[] vectorB={1};
+        boolean t = false;
+        try {
+            matop.dotproduct(vectorA, vectorB);
+        } catch(Exception e) {
+            t = true;
+        } finally {
+            assertTrue(t);
+        }
+    }
+    
+    @Test
+    public void vectorLengthReturnsCorrectAnswer1() {
+        double[] vectorA = {1,2,3};
+        double correct = Math.sqrt(14);
+        try {
+            double result = matop.vectorLength(vectorA);
+            assertTrue(correct == result);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void vectorLengthReturnsCorrectAnswer2() {
+        double[] vectorA = {1,2,3,4,5,6,7,8,9};
+        double correct = Math.sqrt(285);
+        try {
+            double result = matop.vectorLength(vectorA);
+            assertTrue(correct == result);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void vectorMultiplyReturnsCorrectAnswer1() {
+        double[] vector = {1,2,3,4,5,6};
+        double value = 0;
+        double[] correct = {0,0,0,0,0,0};
+        double[] result = matop.vectorMultiply(vector, value);
+        assertTrue(matop.vectorEquals(correct, result));
+    }
+    
+    @Test
+    public void vectorMultiplyReturnsCorrectAnswer2() {
+        double[] vector = {1,2,3,4,5,6};
+        double value = 2;
+        double[] correct = {2,4,6,8,10,12};
+        double[] result = matop.vectorMultiply(vector, value);
+        assertTrue(matop.vectorEquals(correct, result));
+    }
+    
+    @Test
+    public void vectorAddReturnsCorrectAnswer1() {
+        double[] vectorA = {1,2,3};
+        double[] vectorB = {4,5,6};
+        double[] correct = {5,7,9};
+        try {
+            double[] result = matop.vectorAdd(vectorA, vectorB);
+            assertTrue(matop.vectorEquals(result, correct));
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void vectorAddReturnsCorrectAnswer2() {
+        double[] vectorA = {1,2,3,4,5,6,7,8,9};
+        double[] vectorB = vectorA;
+        double[] correct = {2,4,6,8,10,12,14,16,18};
+        try {
+            double[] result = matop.vectorAdd(vectorA, vectorB);
+            assertTrue(matop.vectorEquals(result, correct));
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void vectorAddThrowsException() {
+        double[] vectorA={1,2};
+        double[] vectorB={1};
+        boolean t = false;
+        try {
+            matop.vectorAdd(vectorA, vectorB);
+        } catch(Exception e) {
+            t = true;
+        } finally {
+            assertTrue(t);
+        }
+    }
+    
+    @Test
+    public void vectorSubtractReturnsCorrectAnswer1() {
+        double[] vectorA = {1,2,3};
+        double[] vectorB = {4,5,6};
+        double[] correct = {-3,-3,-3};
+        try {
+            double[] result = matop.vectorSubtract(vectorA, vectorB);
+            assertTrue(matop.vectorEquals(result, correct));
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void vectorSubtractReturnsCorrectAnswer2() {
+        double[] vectorA = {1,2,3,4,5,6,7,8,9};
+        double[] vectorB = vectorA;
+        double[] correct = {0,0,0,0,0,0,0,0,0};
+        try {
+            double[] result = matop.vectorSubtract(vectorA, vectorB);
+            assertTrue(matop.vectorEquals(result, correct));
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void vectorSubtractThrowsException() {
+        double[] vectorA={1,2};
+        double[] vectorB={1};
+        boolean t = false;
+        try {
+            matop.vectorSubtract(vectorA, vectorB);
+        } catch(Exception e) {
+            t = true;
+        } finally {
+            assertTrue(t);
+        }
+    }
+    
+    @Test
+    public void divideVectorWithValueReturnsCorrectAnswer1() {
+        double[] vector = {1,2,3};
+        double value = -2;
+        double[] correct = {-0.5,-1,-1.5};
+        try {
+            double[] result = matop.divideVectorWithValue(vector, value);
+            assertTrue(matop.vectorEquals(result, correct));
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void divideVectorWithValueReturnsCorrectAnswer2() {
+        double[] vector = {1,2,3,4,5,6,7,8,9};
+        double value = 2;
+        double[] correct = {0.5,1,1.5,2,2.5,3,3.5,4,4.5};
+        try {
+            double[] result = matop.divideVectorWithValue(vector, value);
+            assertTrue(matop.vectorEquals(result, correct));
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void divideVectorWithValueThrowsException() {
+        double[] vector = {1,2};
+        double value = 0;
+        boolean t = false;
+        try {
+            matop.divideVectorWithValue(vector, value);
+        } catch(Exception e) {
+            t = true;
+        } finally {
+            assertTrue(t);
+        }
     }
     
 }
