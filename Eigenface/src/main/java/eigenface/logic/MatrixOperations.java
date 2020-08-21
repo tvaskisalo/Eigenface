@@ -54,6 +54,12 @@ public class MatrixOperations {
         
         return subtraction;
     }
+    /**
+     * Metodi vähentää kaikista matriisin alkioista annetun luvun
+     * @param matrix Matriisi
+     * @param value Vähennettävä luku
+     * @return Palauttaa matriisin, josta on vähennetty annettu luku.
+     */
     public double[][] subtract(double matrix[][], double value) {
         double[][] subtraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
@@ -174,7 +180,7 @@ public class MatrixOperations {
      * Metodi laskee annetun matriisin ja vektorin tulon kertomalla vektorin matriisilla.
      * @param matrix Kerrottava matriisi
      * @param vector Kerrottava vektori
-     * @return Palauttaa matriisitulon matrixA*matrixB
+     * @return Palauttaa matriisitulon matrix*vector
      * @throws Exception Heittää poikkeuksen, jos matriisin sarakkeiden määrä ja vektorin pituus on eri.
      */
     public double[] multiply(double matrix[][], double vector[]) throws Exception {
@@ -192,7 +198,13 @@ public class MatrixOperations {
         }
         return result;
     }
-    
+     /**
+     * Metodi laskee annetun vektorin ja matriisin tulon kertomalla vektorin matriisilla.
+     * @param vector Kerrottava vektori
+     * @param matrix Kerrottava matriisi
+     * @return Palauttaa matriisitulon vector*matrix
+     * @throws Exception Heittää poikkeuksen, jos matriisin rivien määrä ja vektorin pituus on eri.
+     */
     public double[] multiply(double vector[], double matrix[][]) throws Exception {
         if (matrix[0].length != vector.length) {
             throw new Exception("Incorrect dimensions");
@@ -229,14 +241,20 @@ public class MatrixOperations {
         }
         return vector;
     }
-    
+    /**
+     * Metodi jakaa jokaisen vektorin alkion annetulla luvulla
+     * @param vector Jaettava vektori
+     * @param value Jakaja
+     * @return Palauttaa jaetun vektorin
+     * @throws Exception Heittää poikkeuksen, jos arvo on nolla.
+     */
     public double[] divideVectorWithValue(double[] vector, double value) throws Exception {
         if (value == 0) {
             throw new Exception("Can't divide by zero");
         }
         double[] returnVec = new double[vector.length];
-        for(int i =0; i<vector.length; i++) {
-            returnVec[i] = vector[i]/value;
+        for (int i = 0; i < vector.length; i++) {
+            returnVec[i] = vector[i] / value;
         }
         
         return returnVec;
@@ -467,9 +485,8 @@ public class MatrixOperations {
      */
     public double[][] reduceEigenPairImpact(double matrix[][], double eigenvalue, double eigenvector[]) {
         double length = vectorLength(eigenvector);
-        double dotproduct = length*length;
-        
-        return subtract(matrix, eigenvalue*dotproduct);
+        double dotproduct = length * length;
+        return subtract(matrix, eigenvalue * dotproduct);
     }
     /**
      * Metodi etsii suurimman ominaisarvon ja sitä vastaavan ominaisvektorin.
@@ -480,13 +497,13 @@ public class MatrixOperations {
      */
     public double[] powerIterate(double matrix[][], double epsilon, int maxIterations) {
         double[] x0 = new double[matrix.length];
-        for (int i=0; i<matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++) {
             x0[i] = 1;
         }
         try {
             double[] x1 = divideVectorWithValue(multiply(matrix, x0), vectorLength(x0));
             int iterations = 1;
-            while(vectorLength(vectorSubtract(x1, x0)) > epsilon && iterations < maxIterations) {
+            while (vectorLength(vectorSubtract(x1, x0)) > epsilon && iterations < maxIterations) {
                 x0 = x1;
                 x1 = divideVectorWithValue(multiply(matrix, x0), vectorLength(x0));
                 iterations++;
@@ -522,29 +539,28 @@ public class MatrixOperations {
      * @throws Exception Heittää poikkeuksen, jos vektorit ovat eri kokoisia.
      */
     public double dotproduct(double vectorA[], double vectorB[]) throws Exception {
-        if(vectorA.length != vectorB.length) {
+        if (vectorA.length != vectorB.length) {
             throw new Exception("Vector lengths are different");
         }
         double dot = 0;
-        for (int i = 0; i<vectorA.length; i++) {
-            dot += vectorA[i]*vectorB[i];
+        for (int i = 0; i < vectorA.length; i++) {
+            dot += vectorA[i] * vectorB[i];
         }
         return dot;
     }
-    
+    /**
+     * Metodi pyöristää kaikki annetun vektorin alkiot neljän decimaalin tarkkuuteen
+     * @param vector Pyöreistettävä vektori
+     * @return Pyöristetty vektori.
+     */
     public double[] roundVectorTo4Decimals(double[] vector) {
         double[] roundedVector = new double[vector.length];
-        for (int i=0; i<vector.length; i++) {
-            roundedVector[i] = Math.round(vector[i]*10000)/10000.0;
+        for (int i = 0; i < vector.length; i++) {
+            roundedVector[i] = Math.round(vector[i] * 10000) / 10000.0;
         }
         
         return roundedVector;
     }
-    
-    
-    
-    
-   
 }
 
 
