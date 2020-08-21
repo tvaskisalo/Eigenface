@@ -22,7 +22,9 @@ Tämän jälkeen ajan puitteissa on tarkoitus katsoa parempaa algoritmia matriis
 ### Tuntikirjanpito
 
 17.8.2020 2h
+
 20.8.2020 2h
+
 21.8.2020 2h
 
 Yht 6h.
