@@ -133,42 +133,41 @@ public class MatrixNonBasicOperationsTest {
     }
     
     @Test 
-    public void roundVectorTo4DecimalsReturnsCorrectVector1() {
+    public void roundVectorTo3DecimalsReturnsCorrectVector1() {
         double[] vector = {1/3.0, 1/2.0, 1/8.0};
-        double[] correct = {0.3333, 0.5000, 0.1250};
-        double[] result = matop.roundVectorTo4Decimals(vector);
+        double[] correct = {0.333, 0.500, 0.125};
+        double[] result = matop.roundVectorTo3Decimals(vector);
         assertTrue(matop.vectorEquals(correct, result));
     }
     
     @Test 
-    public void roundVectorTo4DecimalsReturnsCorrectVector2() {
+    public void roundVectorTo3DecimalsReturnsCorrectVector2() {
         double[] vector = {1/6.0, 0.12345678, 1};
-        double[] correct = {0.1667, 0.1235, 1};
-        double[] result = matop.roundVectorTo4Decimals(vector);
+        double[] correct = {0.167, 0.123, 1};
+        double[] result = matop.roundVectorTo3Decimals(vector);
         assertTrue(matop.vectorEquals(correct, result));
     }
     
     @Test
     public void powerIterateFindsEigenVector1() {
         double[][] matrix = {{3,1},{1,3}};
-        double[] eigenv = matop.powerIterate(matrix, 0.95, 10000);
+        double[] eigenv = matop.powerIterate(matrix, 0.00001, 100);
         eigenv = matop.normalizeVectors(new double[][] {eigenv})[0];
-        eigenv = matop.roundVectorTo4Decimals(eigenv);
+        eigenv = matop.roundVectorTo3Decimals(eigenv);
         
         double[] result = matop.normalizeVectors(new double[][] {{1.0,1.0}})[0];
-        result = matop.roundVectorTo4Decimals(result);
+        result = matop.roundVectorTo3Decimals(result);
         assertTrue(matop.vectorEquals(eigenv, result));
     }
     
     @Test
     public void powerIterateFindsEigenVector2() {
         double[][] matrix = {{1,0,0,0},{-2,4,0,0},{0,-2,1,0},{1,-1,2,-12}};
-        double[] eigenv = matop.powerIterate(matrix, 0.95, 10000);
+        double[] eigenv = matop.powerIterate(matrix, 0.00001, 100);
         eigenv = matop.normalizeVectors(new double[][] {eigenv})[0];
-        eigenv = matop.roundVectorTo4Decimals(eigenv);
-        //double[] result = matop.normalizeVectors(new double[][] {{-0.5547,0.83205,0.0,0.0}})[0];
+        eigenv = matop.roundVectorTo3Decimals(eigenv);
         double[] result = matop.normalizeVectors(new double[][] {{-0.069219,0.042625,-0.151554,0.985101}})[0];
-        result = matop.roundVectorTo4Decimals(result);
+        result = matop.roundVectorTo3Decimals(result);
         assertTrue(matop.vectorEquals(eigenv, result));
     }
     
@@ -176,10 +175,8 @@ public class MatrixNonBasicOperationsTest {
     public void calculateEigenvalueReturnsCorrectAnswer1() {
         double[][] matrix = {{3,1},{1,3}};
         double[] eigenv = matop.normalizeVectors(new double[][] {{1.0,1.0}})[0];
-        eigenv = matop.roundVectorTo4Decimals(eigenv);
-        
+        eigenv = matop.roundVectorTo3Decimals(eigenv);
         double evalue = matop.calculateEigenvalue(matrix, eigenv);
-        
         assertTrue(Math.round(evalue) == 4.0);
     }
     
@@ -187,10 +184,8 @@ public class MatrixNonBasicOperationsTest {
     public void calculateEigenvalueReturnsCorrectAnswer2() {
         double[][] matrix = {{1,0,0,0},{-2,4,0,0},{0,-2,1,0},{1,-1,2,-12}};
         double[] eigenv = matop.normalizeVectors(new double[][] {{-0.069219,0.042625,-0.151554,0.985101}})[0];
-        eigenv = matop.roundVectorTo4Decimals(eigenv);
-        
+        eigenv = matop.roundVectorTo3Decimals(eigenv);
         double evalue = matop.calculateEigenvalue(matrix, eigenv);
-        
         assertTrue(Math.round(evalue) == -12.0);
     }
     
@@ -198,10 +193,41 @@ public class MatrixNonBasicOperationsTest {
     public void calculateEigenvalueReturnsCorrectAnswer3() {
         double[][] matrix = {{1,0,0,0},{-2,4,0,0},{0,-2,1,0},{1,-1,2,-12}};
         double[] eigenv = matop.normalizeVectors(new double[][] {{-0.5547,0.83205,0.0,0.0}})[0];
-        eigenv = matop.roundVectorTo4Decimals(eigenv);
+        eigenv = matop.roundVectorTo3Decimals(eigenv);
         double evalue = matop.calculateEigenvalue(matrix, eigenv);
-        
         assertTrue(Math.round(evalue) == 4.0);
+    }
+    
+    @Test
+    public void calculateEigenvectorsReturnsCorrectAnswer1() {
+        double[][] matrix = {{1,0,0,0},{-2,4,0,0},{0,-2,1,0},{1,-1,2,-12}};
+        double[][] answer = new double[2][4];
+        double[] eigenv1 = matop.normalizeVectors(new double[][] {{-0.069219,0.042625,-0.151554,0.985101}})[0];
+        double[] eigenv2 = matop.normalizeVectors(new double[][] {{-0.5547,0.83205,0.0,0.0}})[0];
+        eigenv1 = matop.roundVectorTo3Decimals(eigenv1);
+        eigenv2 = matop.roundVectorTo3Decimals(eigenv2);
+        answer[0] = eigenv1;
+        answer[1] = eigenv2;
+        double[][] result = matop.getEigenpairs(matrix, 2)[1];
+        System.out.println(Arrays.deepToString(result));
+        System.out.println(Arrays.deepToString(answer));
+        assertTrue(matop.matrixEquals(answer, result));
+    }
+    
+    @Test
+    public void calculateEigenvectorsReturnsCorrectAnswer2() {
+        double[][] matrix = {{-6,4},{3,5}};
+        double[][] answer = new double[2][2];
+        double[] eigenv1 = matop.normalizeVectors(new double[][] {{0.948683, -0.316228}})[0];
+        double[] eigenv2 = matop.normalizeVectors(new double[][] {{0.242536, 0.970143}})[0];
+        eigenv1 = matop.roundVectorTo3Decimals(eigenv1);
+        eigenv2 = matop.roundVectorTo3Decimals(eigenv2);
+        answer[0] = eigenv1;
+        answer[1] = eigenv2;
+        double[][] result = matop.getEigenpairs(matrix, 2)[1];
+        System.out.println(Arrays.deepToString(result));
+        System.out.println(Arrays.deepToString(answer));
+        assertTrue(matop.matrixEquals(answer, result));
     }
     
 }

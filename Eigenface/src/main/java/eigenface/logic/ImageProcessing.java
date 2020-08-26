@@ -75,7 +75,6 @@ public class ImageProcessing {
             Image rescaledImg = img.getScaledInstance(width, height, Image.SCALE_DEFAULT);
             BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
             output.getGraphics().drawImage(rescaledImg, 0, 0, null);
-            ImageIO.write(output, "png", new File("./images/ProcessedImages/" + image.getName()));
             return output;
         } catch (Exception e) {
             System.out.println(e.getMessage());

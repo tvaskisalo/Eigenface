@@ -164,7 +164,7 @@ public class MatrixBasicOperationsTest {
         double[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};
         double value = 2;
         
-        double[][] correct = {{-1,0,1},{2,3,4},{5,6,7}};
+        double[][] correct = {{-1,2,3},{4,3,6},{7,8,7}};
         
         double[][] substraction = matop.subtract(matrix, value);
         assertTrue(matop.matrixEquals(correct, substraction));
@@ -175,7 +175,7 @@ public class MatrixBasicOperationsTest {
         double[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};
         double value = -5;
         
-        double[][] correct = {{6,7,8},{9,10,11},{12,13,14}};
+        double[][] correct = {{6,2,3},{4,10,6},{7,8,14}};
         
         double[][] substraction = matop.subtract(matrix, value);
         assertTrue(matop.matrixEquals(correct, substraction));

@@ -5,8 +5,11 @@
  */
 package eigenface.logic;
 
+import Jama.EigenvalueDecomposition;
+import Jama.Matrix;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
@@ -54,23 +57,28 @@ public class UiLogic {
         meanFaceProgress(processInfo);
         innerProductProgress(processInfo);
         eigenvaluesAndVectors(processInfo);
-        normalizeEigenvectorsProcess(processInfo);
-        sortEigenvectorsByEigenvaluesProcess(processInfo);
+        principalEigenvectorsProcess(processInfo);
+        System.out.println(principalEigenvectors.length);
         File[] faces = imgProcess.getDetectableImages();
         int t = 0;
+        double sum = 0;
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
-            boolean b = imageIsAFace(principalEigenvectors, faceVector, meanface, 80);
-            if (i == 99) {
-                System.out.println("Faces found: " + t / 100.0);
-                t = 0;
-            }
-            if (b) {
+            double b = imageIsAFace(principalEigenvectors, faceVector, meanface, 3425400);
+            sum += b;
+            if (b<3425400) {
                 t++;
             }
+            if (i == 99) {
+                System.out.println("Faces found: " + t / 100.0);
+                System.out.println("Avg "+sum/100.0);
+                t = 0;
+                sum = 0;
+            }
         }
-        System.out.println("Failed: " + t / 56.0);
+        System.out.println("Failed: " + t / 55.0);
+        System.out.println("AVG: "+sum/55.0);
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
@@ -97,7 +105,7 @@ public class UiLogic {
         meanface = matop.meanOfMatrixByRow(dataMatrix);
         dataMatrix = matop.subtract(dataMatrix, meanface);
         
-        /* Seuraava koodi on vain ja ainoastaan keskivertonaaman tulostamiseksi kuvaksi
+        
         double[][] meanf = new double[size][size];
         int row =-1;
         int col =0;
@@ -110,20 +118,24 @@ public class UiLogic {
             col++;
         }
         imgProcess.matrixToImage(meanf, size, size, "meanface");
-        */
+        
     }
     /**
      * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon ominaisarvot ja -vektorit
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
     private void eigenvaluesAndVectors(Label processInfo) {
-        double[][][] values = matop.eigen(innerproductData);
+        double[][][] values = matop.getEigenpairs(innerproductData, files.length);
         //Otetaan ominaisarvot diagonaalista.
-        eigenvalues = matop.getDiagonal(values[0]);
+        eigenvalues = values[0][0];
+        System.out.println(Arrays.toString(eigenvalues));
+        EigenvalueDecomposition eg = new EigenvalueDecomposition( new Matrix(innerproductData));
+        System.out.println(Arrays.toString(eg.getRealEigenvalues()));
         innerEigenvectors = values[1];
         try {
             //Kerrotaan ominaisvektorit alkuperäisellä matriisilla, jotta saadaan kovarianssimatriisin ominaisarvot.
             covEigenvectors = matop.multiply(dataMatrix, innerEigenvectors);
+            System.out.println(covEigenvectors.length+" columns and "+covEigenvectors[0].length+" rows");
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace(System.out);
@@ -154,10 +166,14 @@ public class UiLogic {
      * Metodi järjestää covarianssimatriisin ominaisvektorit vastaamaan niiden ominaisarvojen suuruusjärjestystä laskevasti.
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
-    private void sortEigenvectorsByEigenvaluesProcess(Label processInfo) {
+    private void principalEigenvectorsProcess(Label processInfo) {
         processInfo.setText("Sorting eigenvectors by eigenvalues");
-        double[][][] sortedValues = matop.sortEigenvalue(covEigenvectors, eigenvalues);
-        principalEigenvectors = sortedValues[0];
+        int count = matop.calculatePrincipal(eigenvalues, 0.95);
+        
+        principalEigenvectors = new double[count][size*size];
+        for (int i =0; i<count; i++ ){
+            principalEigenvectors[i]=covEigenvectors[i];
+        }
     }
     
     /**
@@ -172,21 +188,17 @@ public class UiLogic {
      * @param threshold Määrä, jonka perusteella määritellään onko kasvot vai ei. 
      * @return 
      */
-    private boolean imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace, double threshold) {
+    private double imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace, double threshold) {
         try {
             double[] meanAdjustedFace = matop.vectorSubtract(imageVector, meanFace);
             double[] weightVector = matop.projectionToFace(eigenFaces, meanAdjustedFace);
             double[] subtraction = matop.vectorSubtract(meanAdjustedFace, weightVector);
             double length = matop.vectorLength(subtraction);
-            if (length < threshold) {
-                return true;
-            } else {
-                return false;
-            }
+            return length;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return false;
+        return 0;
     }
     
     

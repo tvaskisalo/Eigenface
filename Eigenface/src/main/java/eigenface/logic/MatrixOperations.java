@@ -5,8 +5,7 @@
  */
 package eigenface.logic;
 
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
+import java.util.Arrays;
 
 /**
  * Luokalla voidaan laskea joitain matriisien peruslaskutoimituksia, sekä muuttamaan
@@ -64,7 +63,12 @@ public class MatrixOperations {
         double[][] subtraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                subtraction[i][j] = matrix[i][j] - value;
+                if (i==j) {
+                    subtraction[i][j] = matrix[i][j] - value;
+                } else {
+                    subtraction[i][j] = matrix[i][j];
+                }
+                 
             }
         }
         
@@ -313,20 +317,7 @@ public class MatrixOperations {
         return transpose;
     }
     
-    /**
-     * Metodilla voidaan laskea annetun matriisin ominaisarvot ja vektorit.
-     * Tällä hetkellä käytän valmista kirjastoa, mutta tarkoitus on tehdä oma toeutus seuravilla viikoilla.
-     * @param matrix Annettu matriisi
-     * @return Palauttaa kolmiulotteisen matriisin, jonka ensimmäinen alkio on diagonaalimatriisi ominaisarvoista 
-     * ja toinen alkio on matriisi, jonka sarakkeet ovat ominaisvektorit.
-     */
-    public double[][][] eigen(double[][] matrix) {
-        EigenvalueDecomposition eig = new EigenvalueDecomposition(new Matrix(matrix));
-        double[][] eigValues = transpose(eig.getD().getArray());
-        double[][] eigVectors = transpose(eig.getV().getArray());
-        double[][][] values = {eigValues, eigVectors};
-        return values;
-    }
+    
     
     /**
      * Metodi ottaa neliömatriisin diagonaalilla olevat arvot ja paluttaa ne vektorina.
@@ -474,20 +465,6 @@ public class MatrixOperations {
         return value;
     }
     
-    
-    /**
-     * Metodi vähentää tietyn ominaisarvo ja -vektorin vaikutusta matriisissa, 
-     * jotta se ei tule vastaan uudelleen power-iteroinnissa.
-     * @param matrix Tutkittava matriisi
-     * @param eigenvalue Matriisin ominaisarvo
-     * @param eigenvector Vastaava ominaisvektori
-     * @return Palauttaa matriisin, josta on vähennetty ominaisarvon vaikutusta
-     */
-    public double[][] reduceEigenPairImpact(double matrix[][], double eigenvalue, double eigenvector[]) {
-        double length = vectorLength(eigenvector);
-        double dotproduct = length * length;
-        return subtract(matrix, eigenvalue * dotproduct);
-    }
     /**
      * Metodi etsii suurimman ominaisarvon ja sitä vastaavan ominaisvektorin.
      * @param matrix Tutkittava matriisi
@@ -553,13 +530,44 @@ public class MatrixOperations {
      * @param vector Pyöreistettävä vektori
      * @return Pyöristetty vektori.
      */
-    public double[] roundVectorTo4Decimals(double[] vector) {
+    public double[] roundVectorTo3Decimals(double[] vector) {
         double[] roundedVector = new double[vector.length];
         for (int i = 0; i < vector.length; i++) {
-            roundedVector[i] = Math.round(vector[i] * 10000) / 10000.0;
+            roundedVector[i] = Math.round(vector[i] * 1000) / 1000.0;
         }
         
         return roundedVector;
+    }
+    /**
+     * Metodille annetaan haluttu neliömatriisi, sekä kuinka monta ominaisvektoria se maksimissaan laskee. 
+     * @param matrix Tutkittava neliömatriisi
+     * @param count Ominaisvektoreiden määrä
+     * @return Palauttaa matriisin, jonka sarakkeet ovat ominaisvektoreita.
+     */
+    public double[][][] getEigenpairs(double[][] matrix, int count) {
+        double[][] eigenvectors = new double[count][matrix[0].length];
+        double[] eigenvalues = new double[count];
+        double[][] copyMatrix = matrix;
+        for (int i = 0; i < count; i++) {
+            double[] eigenvector = powerIterate(copyMatrix, 0.00001, 1000);
+            eigenvector = normalizeVectors(new double[][] {eigenvector})[0];
+            eigenvectors[i] = roundVectorTo3Decimals(eigenvector);
+            double eigenvalue = Math.round(calculateEigenvalue(matrix, eigenvector));
+            eigenvalues[i] = eigenvalue;
+            copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
+        }
+        return new double[][][] {{eigenvalues}, eigenvectors};
+    }
+    
+    public double[][] rewriteInTermsOfTheBasis(double[][] matrix, double eigenvalue, double[] eigenvector) {
+        double[][] newMatrix = new double[matrix.length][matrix[0].length];
+        for (int i=0; i<matrix.length; i++) {
+            for(int j=0; j<matrix[0].length; j++) {
+                newMatrix[i][j] = matrix[i][j] - eigenvalue*eigenvector[i]*eigenvector[j];
+            }
+        }
+        
+        return newMatrix;
     }
 }
 
