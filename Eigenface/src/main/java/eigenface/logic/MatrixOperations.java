@@ -5,8 +5,6 @@
  */
 package eigenface.logic;
 
-import java.util.Arrays;
-
 /**
  * Luokalla voidaan laskea joitain matriisien peruslaskutoimituksia, sekä muuttamaan
  * matriisin vektoriksi ja vähentämään vektorista keskiarvon, sekä tekemään vähän kaikkea muutakin.
@@ -63,7 +61,7 @@ public class MatrixOperations {
         double[][] subtraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                if (i==j) {
+                if (i == j) {
                     subtraction[i][j] = matrix[i][j] - value;
                 } else {
                     subtraction[i][j] = matrix[i][j];
@@ -554,16 +552,26 @@ public class MatrixOperations {
             eigenvectors[i] = roundVectorTo3Decimals(eigenvector);
             double eigenvalue = Math.round(calculateEigenvalue(matrix, eigenvector));
             eigenvalues[i] = eigenvalue;
-            copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
+            copyMatrix = subtract(copyMatrix, eigenvalue);
+            //copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
         }
         return new double[][][] {{eigenvalues}, eigenvectors};
     }
-    
+    /**
+     * Metodilla voidaan vähentää jonkin ominaisparin vaikutusta.
+     * Metodi mahdollistaa sen, että löydetään todella erikokoisia ominaisarvoja.
+     * Jos vain vähennettäisiin matriisista ominaisarvo, suurella ominaisarvolla se ei löydä enään mitään ominaisarvoja.
+     * Metodi kuitenkin aiheuttaa paljon laskennallista virhettä, joten ominaisvektorit ovat suuntaa antavia, eikä tarkkoja.
+     * @param matrix Annettu matriisi
+     * @param eigenvalue Annettu ominaisarvo
+     * @param eigenvector Annettu ominaisvektori
+     * @return Palauttaa matriisin, josta on vähennetty ominaisparin vaikutusta.
+     */
     public double[][] rewriteInTermsOfTheBasis(double[][] matrix, double eigenvalue, double[] eigenvector) {
         double[][] newMatrix = new double[matrix.length][matrix[0].length];
-        for (int i=0; i<matrix.length; i++) {
-            for(int j=0; j<matrix[0].length; j++) {
-                newMatrix[i][j] = matrix[i][j] - eigenvalue*eigenvector[i]*eigenvector[j];
+        for(int i = 0; i < matrix.length; i++) {
+            for(int j = 0; j < matrix[0].length; j++) {
+                newMatrix[i][j] = matrix[i][j] - eigenvalue * eigenvector[i] * eigenvector[j];
             }
         }
         

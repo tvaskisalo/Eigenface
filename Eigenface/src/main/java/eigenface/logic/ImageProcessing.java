@@ -10,7 +10,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 /**
@@ -99,6 +98,8 @@ public class ImageProcessing {
         }
         return pixelMatrix;
     }
+    
+    
     /**
      * Metodi muuttaa matriisista mustavalkoisen kuvan. Anntetun matriisin arvot täytyvät olla välillä 0-255.
      * @param matrix Kuvaksi muutettava matriisi

@@ -4,12 +4,8 @@
  * and open the template in the editor.
  */
 package eigenface.logic;
-
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Arrays;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
@@ -65,20 +61,20 @@ public class UiLogic {
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
-            double b = imageIsAFace(principalEigenvectors, faceVector, meanface, 3425400);
+            double b = imageIsAFace(principalEigenvectors, faceVector, meanface, 1714433);
             sum += b;
-            if (b<3425400) {
+            if (b < 1714433) {
                 t++;
             }
             if (i == 99) {
                 System.out.println("Faces found: " + t / 100.0);
-                System.out.println("Avg "+sum/100.0);
+                System.out.println("Avg " + sum / 100.0);
                 t = 0;
                 sum = 0;
             }
         }
         System.out.println("Failed: " + t / 55.0);
-        System.out.println("AVG: "+sum/55.0);
+        System.out.println("AVG: " + sum / 55.0);
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
@@ -107,9 +103,9 @@ public class UiLogic {
         
         
         double[][] meanf = new double[size][size];
-        int row =-1;
-        int col =0;
-        for (int i=0; i<meanface.length; i++) {
+        int row = -1;
+        int col = 0;
+        for (int i = 0; i < meanface.length; i++) {
             if (i % size == 0) {
                 row++;
                 col = 0;
@@ -128,14 +124,10 @@ public class UiLogic {
         double[][][] values = matop.getEigenpairs(innerproductData, files.length);
         //Otetaan ominaisarvot diagonaalista.
         eigenvalues = values[0][0];
-        System.out.println(Arrays.toString(eigenvalues));
-        EigenvalueDecomposition eg = new EigenvalueDecomposition( new Matrix(innerproductData));
-        System.out.println(Arrays.toString(eg.getRealEigenvalues()));
         innerEigenvectors = values[1];
         try {
             //Kerrotaan ominaisvektorit alkuperäisellä matriisilla, jotta saadaan kovarianssimatriisin ominaisarvot.
             covEigenvectors = matop.multiply(dataMatrix, innerEigenvectors);
-            System.out.println(covEigenvectors.length+" columns and "+covEigenvectors[0].length+" rows");
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace(System.out);
@@ -170,9 +162,9 @@ public class UiLogic {
         processInfo.setText("Sorting eigenvectors by eigenvalues");
         int count = matop.calculatePrincipal(eigenvalues, 0.95);
         
-        principalEigenvectors = new double[count][size*size];
-        for (int i =0; i<count; i++ ){
-            principalEigenvectors[i]=covEigenvectors[i];
+        principalEigenvectors = new double[count][size * size];
+        for(int i = 0; i < count; i++ ) {
+            principalEigenvectors[i] = covEigenvectors[i];
         }
     }
     
