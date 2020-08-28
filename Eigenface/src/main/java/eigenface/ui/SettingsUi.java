@@ -29,7 +29,7 @@ public class SettingsUi {
         Label errorMessage = new Label("");
         
         TextField inputSize = new TextField();
-        Button submit = new Button("Submit");
+        Button submit = new Button("Generate Face");
         
         background.setTop(dimensions);
         settings.add(sizeLabel, 0, 0);

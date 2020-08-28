@@ -28,5 +28,8 @@ public class ProcessingUi {
         stage.setWidth(500); 
         stage.setScene(new Scene(background));
         processingLogic.generateEigenface(processInfo);
+        
     }
+    
+    
 }

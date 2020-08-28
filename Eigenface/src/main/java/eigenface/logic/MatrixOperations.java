@@ -552,9 +552,14 @@ public class MatrixOperations {
             eigenvectors[i] = roundVectorTo3Decimals(eigenvector);
             double eigenvalue = Math.round(calculateEigenvalue(matrix, eigenvector));
             eigenvalues[i] = eigenvalue;
-            copyMatrix = subtract(copyMatrix, eigenvalue);
-            //copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
-        }
+            //Tämä on hieman laastarikorjaus. Suurilla ominaisarvoilla ominaisarvon vähentäminen "piilottaa" muut ominaisarvot.
+            //Suurille ominaisarvoille voidaan kuitenkin laskea kaikki ominaisparit vähentämällä matriisista ominaisarvon, ominaisvektorin ja ominaisvektorin transpoosin tulo
+            //Tämä kuitenkin aiheuttaa paljon epätarkkuutta ominaisvektoreiden arvoille.
+            if(eigenvalue > 1000) {
+                copyMatrix = rewriteInTermsOfTheBasis(copyMatirx, eigenvalue, eigenvector);
+            } else {
+                copyMatrix = subtract(copyMatrix, eigenvalue);
+            }
         return new double[][][] {{eigenvalues}, eigenvectors};
     }
     /**

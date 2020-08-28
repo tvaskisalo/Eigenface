@@ -7,7 +7,6 @@ package eigenface.logic;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -39,24 +38,14 @@ public class UiLogic {
         dataMatrix = new double[files.length][size * size];
         innerproductData = new double[files.length][files.length];
     }
-    
     /**
-     * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
-     * @param info Palauttaa BorderPane-olion, jossa on kyseisestä vaiheesta tietoa.
+     * Tunnistaa annetuista kuvista montako kasvoja on ja kuinka monta ei kasvoja on.
+     * @param faces File-lista, jossa on tunnistettavat kuvat
+     * @return Palauttaa listan, jossa ensimmäinen lakio on tunnistettujen naamojen määrä ja toinen on määrä, joita ei tunnistettu kasvoiksi.
      */
-    public void generateEigenface(BorderPane info) {
-        Label processInfo = new Label("");
-        ProgressBar pb = new ProgressBar(0);
-        info.setTop(processInfo);
-        info.setCenter(pb);
-        imageToMatrixProgress(processInfo);
-        meanFaceProgress(processInfo);
-        innerProductProgress(processInfo);
-        eigenvaluesAndVectors(processInfo);
-        principalEigenvectorsProcess(processInfo);
-        System.out.println(principalEigenvectors.length);
-        File[] faces = imgProcess.getDetectableImages();
-        int t = 0;
+    public int[] recognizeFaces(File[] faces) {
+        int numberOfFaces = 0;
+        int numberOfNotFaces = 0;
         double sum = 0;
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
@@ -64,24 +53,31 @@ public class UiLogic {
             double b = imageIsAFace(principalEigenvectors, faceVector, meanface, 1714433);
             sum += b;
             if (b < 1714433) {
-                t++;
-            }
-            if (i == 99) {
-                System.out.println("Faces found: " + t / 100.0);
-                System.out.println("Avg " + sum / 100.0);
-                t = 0;
-                sum = 0;
+                numberOfFaces++;
+            } else {
+                numberOfNotFaces++;
             }
         }
-        System.out.println("Failed: " + t / 55.0);
-        System.out.println("AVG: " + sum / 55.0);
+        return new int[] {numberOfFaces, numberOfNotFaces};
+    }
+    /**
+     * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
+     * @param info Palauttaa BorderPane-olion, jossa on kyseisestä vaiheesta tietoa.
+     */
+    public void generateEigenface(BorderPane info) {
+        Label processInfo = new Label("Processing...");
+        info.setTop(processInfo);
+        imageToMatrixProgress();
+        meanFaceProgress();
+        innerProductProgress();
+        eigenvaluesAndVectors();
+        principalEigenvectorsProcess();
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
-    private void imageToMatrixProgress(Label processInfo) {
-        processInfo.setText("Converting images to a matrix...");
+    private void imageToMatrixProgress() {
         for (int i = 0; i < files.length; i++) {
             //Muutetaan kuva kokoon r x r, sekä mustavalkoiseksi
             BufferedImage image = imgProcess.processImage(files[i], size, size);
@@ -96,12 +92,9 @@ public class UiLogic {
      * Metodi laskee keskiarvonaaman ja vähentää sen kaikista naama-vektoreista
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
-    private void meanFaceProgress(Label processInfo) {
-        processInfo.setText("Calculating meanface...");
+    private void meanFaceProgress() {
         meanface = matop.meanOfMatrixByRow(dataMatrix);
         dataMatrix = matop.subtract(dataMatrix, meanface);
-        
-        
         double[][] meanf = new double[size][size];
         int row = -1;
         int col = 0;
@@ -120,7 +113,7 @@ public class UiLogic {
      * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon ominaisarvot ja -vektorit
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
-    private void eigenvaluesAndVectors(Label processInfo) {
+    private void eigenvaluesAndVectors() {
         double[][][] values = matop.getEigenpairs(innerproductData, files.length);
         //Otetaan ominaisarvot diagonaalista.
         eigenvalues = values[0][0];
@@ -137,8 +130,7 @@ public class UiLogic {
      * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
-    private void innerProductProgress(Label processInfo) {
-        processInfo.setText("Calculating innerproduct...");
+    private void innerProductProgress() {
         try {
             innerproductData = matop.multiply(matop.transpose(dataMatrix), dataMatrix);
         } catch (Exception ex) {
@@ -149,8 +141,7 @@ public class UiLogic {
      * Metodi normalisoi kaikki covarianssimatriisin ominaisvektorit
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */    
-    private void normalizeEigenvectorsProcess(Label processInfo) {
-        processInfo.setText("Normalizing eigenvectors...");
+    private void normalizeEigenvectorsProcess() {
         covEigenvectors = matop.normalizeVectors(covEigenvectors);
     }
     
@@ -158,10 +149,8 @@ public class UiLogic {
      * Metodi järjestää covarianssimatriisin ominaisvektorit vastaamaan niiden ominaisarvojen suuruusjärjestystä laskevasti.
      * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
-    private void principalEigenvectorsProcess(Label processInfo) {
-        processInfo.setText("Sorting eigenvectors by eigenvalues");
-        int count = matop.calculatePrincipal(eigenvalues, 0.95);
-        
+    private void principalEigenvectorsProcess() {
+        int count = matop.calculatePrincipal(eigenvalues, 0.95);        
         principalEigenvectors = new double[count][size * size];
         for(int i = 0; i < count; i++ ) {
             principalEigenvectors[i] = covEigenvectors[i];
