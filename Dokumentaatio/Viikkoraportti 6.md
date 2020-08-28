@@ -11,8 +11,11 @@ Seuraavaksi olisi tarkoitus tehdä järkevä käyttöliittymä, viimeistellä te
 ### Tuntikirjanpito
 
 24.8.2020 1.5h
+
 26.8.2020 3h
+
 27.8.2020 1.5h
+
 28.8.2020 4h
 
 Yht: 10h
