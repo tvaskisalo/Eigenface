@@ -1,6 +1,6 @@
 ## Viikkoraportti 6
 
-Tällä viikolla ohjelma on edistynyt jonkin verran. Olen tällä viikolla tehnyt algorimit kaikkien ominaisparien laskentaan, eli en enää tarvitse ollenkaan matriisilaskentaan liittyviä javan kirjastoja. Edistin myös vähän kuvankäsittelyyn liittyvää testausta. Kaikille metodeille luokissa MatrixOperations ja ImageProcessing ei ole testejä, sillä osa metodeista on tullut turhiksi ja todennäköisesti poistetaan. Tämä harmillisesti vähentää testikattavuutta, sillä luokissa on turhia metodeita.  Lisäilin vähän myös käyttöliittymän koodia. Tein myös vertaisarvioinnin, sekä lisäsin hieman dokumentointia. Jouduin perjantain työskentelemään kannettavalla tietokoneella, jossa ei syystä taikka toisesta toimi netbeans kunnolla, niin ohjelmassa saattaa olla tällä hetkellä hieman bugeja. 
+Tällä viikolla ohjelma on edistynyt jonkin verran. Olen tällä viikolla tehnyt algorimit kaikkien ominaisparien laskentaan, eli en enää tarvitse ollenkaan matriisilaskentaan liittyviä javan kirjastoja. Edistin myös vähän kuvankäsittelyyn liittyvää testausta. Kaikille metodeille luokissa MatrixOperations ja ImageProcessing ei ole testejä, sillä osa metodeista on tullut turhiksi ja todennäköisesti poistetaan. Tämä harmillisesti vähentää testikattavuutta, sillä luokissa on turhia metodeita.  Lisäilin vähän myös käyttöliittymän koodia. Tein myös vertaisarvioinnin, sekä lisäsin hieman dokumentointia. Jouduin perjantain työskentelemään kannettavalla tietokoneella, jossa ei syystä taikka toisesta toimi netbeans kunnolla, niin ohjelmassa saattaa olla tällä hetkellä hieman bugeja.
 
 Opin tällä viikolla yllättävän paljon teoriaa laskennasta. Jouduin lukemaan jonkin verran aineistoja, jotta ymmärsin miten voidaan löytää monta ominaisparia käyttäen power-iterointia. Löysin tähän vastauksen ja sain koodin toimimaan jotenkin. Opin myös vertaisarvioinnista, miten lukea toisen koodia. Mielestäni tällä kurssilla olisi saanut olla enemmän vertaisarviointeja, sillä saan ainakin itse niistä paljon irti. Tykkään myös saada palautetta, mikä motivoi koodaamaan. 
 
@@ -10,3 +10,9 @@ Seuraavaksi olisi tarkoitus tehdä järkevä käyttöliittymä, viimeistellä te
 
 ### Tuntikirjanpito
 
+24.8.2020 1.5h
+26.8.2020 3h
+27.8.2020 1.5h
+28.8.2020 4h
+
+Yht: 10h
