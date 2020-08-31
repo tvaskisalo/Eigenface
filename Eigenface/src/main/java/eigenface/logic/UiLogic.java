@@ -6,8 +6,7 @@
 package eigenface.logic;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import java.util.Arrays;
 
 /**
  * Luokalla voidaan suorittaa eigenface-prosessin eri vaiheita, sekä näyttää niitä käyttöliittymälle.
@@ -46,11 +45,18 @@ public class UiLogic {
     public int[] recognizeFaces(File[] faces) {
         int numberOfFaces = 0;
         int numberOfNotFaces = 0;
+        double[] faceValues = new double[100];
+        double[] otherValues = new double[100];
         double sum = 0;
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
             double b = imageIsAFace(principalEigenvectors, faceVector, meanface, 1714433);
+            if (i < 100) {
+                faceValues[i] = b;
+            } else {
+                otherValues[i-100] = b;
+            }
             sum += b;
             if (b < 1714433) {
                 numberOfFaces++;
@@ -58,20 +64,25 @@ public class UiLogic {
                 numberOfNotFaces++;
             }
         }
+        System.out.println(Arrays.toString(faceValues));
+        System.out.println(faceValues.length);
+        System.out.println(Arrays.toString(otherValues));
+        System.out.println(otherValues.length);
         return new int[] {numberOfFaces, numberOfNotFaces};
     }
     /**
      * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
-     * @param info Palauttaa BorderPane-olion, jossa on kyseisestä vaiheesta tietoa.
+     * @return palauttaa kuluneen ajan nanosekunneissa
      */
-    public void generateEigenface(BorderPane info) {
-        Label processInfo = new Label("Processing...");
-        info.setTop(processInfo);
+    public long generateEigenface() {
+        long start = System.nanoTime();
         imageToMatrixProgress();
         meanFaceProgress();
         innerProductProgress();
         eigenvaluesAndVectors();
         principalEigenvectorsProcess();
+        long end = System.nanoTime();
+        return(end-start);
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla

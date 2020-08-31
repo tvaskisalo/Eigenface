@@ -8,8 +8,6 @@ package eigenface.ui;
 import eigenface.logic.ImageProcessing;
 import eigenface.logic.UiLogic;
 import java.io.File;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Label;
 
@@ -19,30 +17,24 @@ import javafx.scene.control.Label;
  */
 public class FacialRecognitionUi {
     
-    public void setRecognitionUi(Stage stage, UiLogic logic) {
-
+    public GridPane setRecognitionUi(UiLogic logic, long time) {
+        GridPane gp = new GridPane();
         ImageProcessing img = new ImageProcessing();
-        GridPane background = new GridPane();
-        BorderPane info = new BorderPane();
         Label warning = new Label("");
-        info.setTop(Label);
-        
-        background.setHgap(50);
-        background.setVgap(50);
-        background.add(info, 1, 1);
-        stage.setHeight(500);
-        stage.setWidth(500);
-        
-        stage.setScene(new Scene(background));
-        
-        
+        gp.add(warning, 0, 0);
+        gp.add(new Label("Time to generate eigenfaces: "+ time/1000000000.0), 0, 1);
         File[] faces = img.getDetectableImages();
         if (faces.length == 0) {
-            warning.setTextt("Please put images to folder Eigenface/images/DetectFaces and restart");
+            warning.setText("Please put images to folder Eigenface/images/DetectFaces and restart");
         } else {
+            long start = System.nanoTime();
             int[] numbers = logic.recognizeFaces(faces);
+            long end = System.nanoTime();
+            gp.add(new Label("Time to recognize faces: " + (end-start)/1000000000.0), 0, 2);
             Label stats = new Label("Faces found: " + numbers[0] + "\n Others found: " + numbers[1]);
-            info.setCenter(stats);
+            gp.add(stats, 0, 0);
         }
+        
+        return gp;
     }
 }

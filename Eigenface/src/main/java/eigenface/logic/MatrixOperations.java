@@ -556,10 +556,11 @@ public class MatrixOperations {
             //Suurille ominaisarvoille voidaan kuitenkin laskea kaikki ominaisparit vähentämällä matriisista ominaisarvon, ominaisvektorin ja ominaisvektorin transpoosin tulo
             //Tämä kuitenkin aiheuttaa paljon epätarkkuutta ominaisvektoreiden arvoille.
             if(eigenvalue > 1000) {
-                copyMatrix = rewriteInTermsOfTheBasis(copyMatirx, eigenvalue, eigenvector);
+                copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
             } else {
                 copyMatrix = subtract(copyMatrix, eigenvalue);
             }
+        }    
         return new double[][][] {{eigenvalues}, eigenvectors};
     }
     /**

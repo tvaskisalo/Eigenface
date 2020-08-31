@@ -5,9 +5,6 @@
  */
 package eigenface;
 import eigenface.ui.Ui;
-
-
-
 /**
  *  Luokka ei tee mitään tällä hetkellä, mutta se on projektin Main-luokka. 
  *  Sitä tullaan käyttämään kutsuakseen käyttöliittymää, eikä muuta. Tämä kikka tehdään siksi,
@@ -15,7 +12,7 @@ import eigenface.ui.Ui;
  * 
  */
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Ui.main(args);
     }
 }
