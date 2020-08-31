@@ -45,30 +45,42 @@ public class UiLogic {
     public int[] recognizeFaces(File[] faces) {
         int numberOfFaces = 0;
         int numberOfNotFaces = 0;
+        int correct = 0;
+        int incorrect = 0;
         double[] faceValues = new double[100];
         double[] otherValues = new double[100];
         double sum = 0;
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
-            double b = imageIsAFace(principalEigenvectors, faceVector, meanface, 1714433);
+            double b = imageIsAFace(principalEigenvectors, faceVector, meanface);
             if (i < 100) {
                 faceValues[i] = b;
             } else {
                 otherValues[i-100] = b;
             }
             sum += b;
-            if (b < 1714433) {
+            if (b <= 3525626 && b>812615.1) {
                 numberOfFaces++;
+                if(i<100) {
+                    correct++;
+                } else {
+                    incorrect++;
+                }
             } else {
                 numberOfNotFaces++;
+                if(i<100) {
+                    incorrect++;
+                } else {
+                    correct++;
+                }
             }
         }
         System.out.println(Arrays.toString(faceValues));
         System.out.println(faceValues.length);
         System.out.println(Arrays.toString(otherValues));
         System.out.println(otherValues.length);
-        return new int[] {numberOfFaces, numberOfNotFaces};
+        return new int[] {numberOfFaces, numberOfNotFaces, correct, incorrect};
     }
     /**
      * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
@@ -180,7 +192,7 @@ public class UiLogic {
      * @param threshold Määrä, jonka perusteella määritellään onko kasvot vai ei. 
      * @return 
      */
-    private double imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace, double threshold) {
+    private double imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace) {
         try {
             double[] meanAdjustedFace = matop.vectorSubtract(imageVector, meanFace);
             double[] weightVector = matop.projectionToFace(eigenFaces, meanAdjustedFace);

@@ -31,7 +31,7 @@ public class FacialRecognitionUi {
             int[] numbers = logic.recognizeFaces(faces);
             long end = System.nanoTime();
             gp.add(new Label("Time to recognize faces: " + (end-start)/1000000000.0), 0, 2);
-            Label stats = new Label("Faces found: " + numbers[0] + "\n Others found: " + numbers[1]);
+            Label stats = new Label("Faces found: " + numbers[0] + "\n Others found: " + numbers[1] +"\n correct: " + numbers[2] +"\n incorrect: "+ numbers[3]);
             gp.add(stats, 0, 0);
         }
         
