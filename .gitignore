@@ -1,2 +1,4 @@
 /Eigenface/target/
-/Eigenface/images/
+/Eigenface/images/processedImages/*
+/Eigenface/images/inputImages/*
+/Eigenface/images/detectFaces/*
