@@ -555,7 +555,7 @@ public class MatrixOperations {
             //Tämä on hieman laastarikorjaus. Suurilla ominaisarvoilla ominaisarvon vähentäminen "piilottaa" muut ominaisarvot.
             //Suurille ominaisarvoille voidaan kuitenkin laskea kaikki ominaisparit vähentämällä matriisista ominaisarvon, ominaisvektorin ja ominaisvektorin transpoosin tulo
             //Tämä kuitenkin aiheuttaa paljon epätarkkuutta ominaisvektoreiden arvoille.
-            if(eigenvalue > 1000) {
+            if (eigenvalue > 1000) {
                 copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
             } else {
                 copyMatrix = subtract(copyMatrix, eigenvalue);
@@ -575,8 +575,8 @@ public class MatrixOperations {
      */
     public double[][] rewriteInTermsOfTheBasis(double[][] matrix, double eigenvalue, double[] eigenvector) {
         double[][] newMatrix = new double[matrix.length][matrix[0].length];
-        for(int i = 0; i < matrix.length; i++) {
-            for(int j = 0; j < matrix[0].length; j++) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
                 newMatrix[i][j] = matrix[i][j] - eigenvalue * eigenvector[i] * eigenvector[j];
             }
         }

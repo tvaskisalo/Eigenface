@@ -5,11 +5,17 @@
  */
 package eigenface.logic;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
- * Luokalla voidaan suorittaa eigenface-prosessin eri vaiheita, sekä näyttää niitä käyttöliittymälle.
+ * Luokalla voidaan suorittaa eigenface-prosessin eri vaiheita.
  * 
  */
 public class UiLogic {
@@ -50,6 +56,9 @@ public class UiLogic {
         double[] faceValues = new double[100];
         double[] otherValues = new double[100];
         double sum = 0;
+        int[] minMaxThresholds = calculateThresholds();
+        int min = minMaxThresholds[0];
+        int max = minMaxThresholds[1];
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
@@ -57,19 +66,19 @@ public class UiLogic {
             if (i < 100) {
                 faceValues[i] = b;
             } else {
-                otherValues[i-100] = b;
+                otherValues[i - 100] = b;
             }
             sum += b;
-            if (b <= 3525626 && b>812615.1) {
+            if (b < max && b > min) {
                 numberOfFaces++;
-                if(i<100) {
+                if (i < 100) {
                     correct++;
                 } else {
                     incorrect++;
                 }
             } else {
                 numberOfNotFaces++;
-                if(i<100) {
+                if (i < 100) {
                     incorrect++;
                 } else {
                     correct++;
@@ -83,6 +92,76 @@ public class UiLogic {
         return new int[] {numberOfFaces, numberOfNotFaces, correct, incorrect};
     }
     /**
+     * Metodilla voidaan asettaa valmiista .csv tiedostoista ominaisvetorit ja keskiarvo kasvot.
+     * Tällöin ei tarvitse generoida aina uudelleen kasvoja.
+     */
+    public long useExisting() {
+        long start = System.nanoTime();
+        principalEigenvectors = readMatrix("eigen");
+        meanface = readMatrix("mean")[0];
+        long end = System.nanoTime();
+        return (end-start);
+    }
+    /**
+     * Metodi kirjoittaa matriisin .csv-tiedostoon
+     * @param name Tiedoston nimi. Tämä on kovakoodattu olemaan joko "eigen" tai "mean", viitaten joko ominaisvektoreihin tai keskiarvo kasvoihin.
+     * @param matrix Matriisi, joka kirjoitettaan tiedostoksi
+     */
+    public void writeMatrix(String name, double[][] matrix) {
+        try {
+            BufferedWriter buffWriter = new BufferedWriter(new FileWriter("./existingData/" + name + size + ".csv"));
+            for (int i = 0; i < matrix[0].length; i++) {
+                for (int j = 0; j < matrix.length; j++) {
+                    if (j + 1 == matrix.length) {
+                        buffWriter.write(matrix[j][i] + "");
+                    } else {
+                        buffWriter.write(matrix[j][i] + ",");
+                    }
+                }
+                if (i + 1 != matrix[0].length) {
+                    buffWriter.newLine();
+                }
+            }
+            buffWriter.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } 
+    }    
+    /**
+     * Metodi lukee .csv-tiedoston ja palauttaa matriisin.
+     * @param name Tiedoston nimi. Tämä on kovakoodattu olemaan joko "eigen" tai "mean", viitaten joko ominaisvektoreihin tai keskiarvo kasvoihin.
+     * @return Palauttaa matriisin, jonka alkiot ovat joko ominaisvektorit tai keskiarvo kasvot.
+     */
+    public double[][] readMatrix(String name) {
+        double[][] returnValue = new double[0][0];
+        int j = 0;
+        try {
+            BufferedReader buffReader = Files.newBufferedReader(Paths.get("./existingData/" + name + size + ".csv"), StandardCharsets.US_ASCII);
+            String line = buffReader.readLine();
+            if (line != null) {
+                String[] numbers = line.split(",");
+                if (name.equals("mean")) {
+                    returnValue = new double[1][size * size];
+                } else {
+                    returnValue = new double[numbers.length][size * size];
+                }
+            }
+            while (line != null) {
+                String[] numbers = line.split(",");
+                for (int i = 0; i < numbers.length; i++) {
+                    returnValue[i][j] = Double.valueOf(numbers[i]);
+                }
+                j++;
+                line = buffReader.readLine();
+            }
+            buffReader.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println(name);
+        }
+        return returnValue;
+    }
+    /**
      * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
      * @return palauttaa kuluneen ajan nanosekunneissa
      */
@@ -94,7 +173,9 @@ public class UiLogic {
         eigenvaluesAndVectors();
         principalEigenvectorsProcess();
         long end = System.nanoTime();
-        return(end-start);
+        writeMatrix("eigen", principalEigenvectors);
+        writeMatrix("mean", new double[][] {meanface});
+        return (end - start);
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
@@ -175,7 +256,7 @@ public class UiLogic {
     private void principalEigenvectorsProcess() {
         int count = matop.calculatePrincipal(eigenvalues, 0.95);        
         principalEigenvectors = new double[count][size * size];
-        for(int i = 0; i < count; i++ ) {
+        for (int i = 0; i < count; i++) {
             principalEigenvectors[i] = covEigenvectors[i];
         }
     }
@@ -185,7 +266,7 @@ public class UiLogic {
      * Tämän se tekee käyttämällä faktaa, että yleensä ottaen, jos kuvassa on kasvot, niin siitä tehty matriisi ei muutu paljoa, 
      * kun se projektoidaan "naama"-avaruuten kuvamatriisin kovarianssimatriisin ominaisarvojen perusteella.
      * Tällä hetkellä metodin tunnistaa kasvot noin 80% ajasta, kun kuvassa on naama ja
-     * tunnistaa noin 70% ajasta, että kuvassa ei ole naamaa, jos siinä ei ole naama silloin, kun threshold on 85 ja kuvankoko on 100x100
+     * tunnistaa noin 70% ajasta, että kuvassa ei ole naamaa, jos siinä ei ole naama silloin.
      * @param eigenFaces Kuvamatriisin kovarianssimatriisin ominaisarvot
      * @param imageVector Tutkittava kuvavektori
      * @param meanFace Keskiverto naamavektori
@@ -205,5 +286,14 @@ public class UiLogic {
         return 0;
     }
     
-    
+    /**
+     * Metodi laskee minimi ja maksimi rajat tunnistettaville kasvoille. Liian suuret ja liian pienet arvot ovat yleensä ottaen muita kuin kasvoja.
+     * Repositoriosta löytyy perusteluita, miksi rajat ovat nämä. 
+     * @return Palauttaa listan, jossa ensimmäinen alkio on min ja toinen max.
+     */
+    private int[] calculateThresholds() {
+        int min = 8400 * size;
+        int max = 36000 * size;
+        return new int[] {min, max};
+    }
 }

@@ -16,13 +16,20 @@ import javafx.scene.control.Label;
  * 
  */
 public class FacialRecognitionUi {
-    
+    /**
+     * Metodi rakentaa kasvojentunnistuken käyttöliittymän.
+     * @param logic UiLogic-olio, jossa on tehty tarvittavat asiat käyttämään ominaiskasvoja ja keskiarvo kasvoa
+     * @param time Ominaiskasvojen generointiin kulunut aika. Jos käytetään tiedostoa, niin tiedoston lukuun kulunut aika
+     * @return Palauttaa GridPane-olion, jossa on käyttöliittymä.
+     */
     public GridPane setRecognitionUi(UiLogic logic, long time) {
         GridPane gp = new GridPane();
         ImageProcessing img = new ImageProcessing();
         Label warning = new Label("");
         gp.add(warning, 0, 0);
-        gp.add(new Label("Time to generate eigenfaces: "+ time/1000000000.0), 0, 1);
+        if (time > -1) {
+            gp.add(new Label("Time to generate eigenfaces: " + time / 1000000000.0), 0, 1);
+        }
         File[] faces = img.getDetectableImages();
         if (faces.length == 0) {
             warning.setText("Please put images to folder Eigenface/images/DetectFaces and restart");
@@ -30,11 +37,12 @@ public class FacialRecognitionUi {
             long start = System.nanoTime();
             int[] numbers = logic.recognizeFaces(faces);
             long end = System.nanoTime();
-            gp.add(new Label("Time to recognize faces: " + (end-start)/1000000000.0), 0, 2);
-            Label stats = new Label("Faces found: " + numbers[0] + "\n Others found: " + numbers[1] +"\n correct: " + numbers[2] +"\n incorrect: "+ numbers[3]);
+            gp.add(new Label("Time to recognize faces: " + (end - start) / 1000000000.0), 0, 2);
+            Label stats = new Label("Faces found: " + numbers[0] + "\n Others found: " + numbers[1] + "\n correct: " + numbers[2] + "\n incorrect: " + numbers[3]);
             gp.add(stats, 0, 0);
         }
-        
         return gp;
     }
+    
+    
 }
