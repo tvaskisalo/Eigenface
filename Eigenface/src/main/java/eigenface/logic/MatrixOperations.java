@@ -5,6 +5,10 @@
  */
 package eigenface.logic;
 
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Luokalla voidaan laskea joitain matriisien peruslaskutoimituksia, sekä muuttamaan
  * matriisin vektoriksi ja vähentämään vektorista keskiarvon, sekä tekemään vähän kaikkea muutakin.
@@ -38,14 +42,14 @@ public class MatrixOperations {
     /**
      * Metodiin annetaan matriisi ja arvo. Metodi vähentää jokaisesta matriisin solusta annetun arvon.
      * @param matrix Matriisi
-     * @param value Vähennettävä arvo
+     * @param vector Vähennettävä vektori
      * @return Metodi palauttaa matriisin, josta on vähennettu annettu arvo.
      */
-    public double[][] subtract(double matrix[][], double[] value) {
+    public double[][] subtract(double matrix[][], double[] vector) {
         double[][] subtraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-                subtraction[i][j] = matrix[i][j] - value[j];
+                subtraction[i][j] = matrix[i][j] - vector[j];
             }
         }
         
@@ -281,20 +285,22 @@ public class MatrixOperations {
         return returnVector;
     }
     /**
-     * Metodi laskee matriisin arvojen keskiarvon, eli summaa kaikki matriisin alkiot ja jakaa ne alkioiden määrällä.
+     * Metodi laskee matriisin rivien keskiarvon, eli summaa kaikki rivin alkiot ja jakaa ne rivien määrällä.
      * @param matrix Matriisi
-     * @return Palauttaa matriisin arvojen keskiarvon.
+     * @return Palauttaa matriisin arvojen keskiarvon vektorissa.
      */
     public double[] meanOfMatrixByRow(double[][] matrix) {
         int count = matrix.length;
-        double[] mean = new double[matrix[0].length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                mean[j] += matrix[i][j];
+        double[] mean = matrix[0];
+        for (int i = 1; i < matrix.length; i++) {
+            try {
+                mean = vectorAdd(mean, matrix[i]);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
             }
         }
         for (int k = 0; k < mean.length; k++) {
-            mean[k] = mean[k] / count;
+            mean[k] = mean[k] / (count * 1.0);
         }
         return mean;
     }
@@ -332,43 +338,6 @@ public class MatrixOperations {
             }
         }
         return diagonal;
-    }
-    /**
-     * Metodilla järjestetään ominaisarvot laskevaan järjestykseen.
-     * Sitten annettu matriisi, jonka sarakkeet ovat vastaavat ominaisvektorit muutetaan samaan järjestykseen.
-     * Metodi vaatii refaktorointia ja optimointia, sillä se on hidas, epäselvä ja pitkä.
-     * @param matrix Matriisi, jonka sarakkeet ovat ominaisvektoreita.
-     * @param vector Vektori, jonka arvot ovat omainaisarvot.
-     * @return Palauttaa kolmiulotteisen matriisin, jonka ensimmäinen alkio on järjestetty matriisi ja toinen on taulukko, jossa on vektori ominaisarvoista.
-     */
-    public double[][][] sortEigenvalue(double[][] matrix, double[] vector) {
-        double[] sortedV = vector;
-        for (int i = 1; i < vector.length; i++) {
-            int j = i - 1;
-            while (j >= 0 && sortedV[j] < sortedV[j + 1]) {
-                double a = sortedV[j];
-                sortedV[j] = sortedV[j + 1];
-                sortedV[j + 1] = a;
-                j -= 1;
-            }
-        }
-        int principal = calculatePrincipal(sortedV, 0.95);
-        double[][] sortedM = new double[principal][matrix[0].length];
-        double[] eigen = new double[principal];
-        for (int k = 0; k < principal; k++) {
-            double value = sortedV[k];
-            eigen[k] = value;
-            int index = 0;
-            for (int g = 0; g < vector.length; g++) {
-                if (vector[g] == value) {
-                    index = g;
-                    break;
-                }
-            }
-            sortedM[k] = matrix[index];
-        }
-        
-        return new double[][][] {sortedM, {eigen}};
     }
     /**
      * Metodilla voidaan laskea, mitkä suurimmat ominaisarvot tarvitaan, 

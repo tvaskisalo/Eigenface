@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Luokalla voidaan suorittaa eigenface-prosessin eri vaiheita.
@@ -30,6 +32,7 @@ public class UiLogic {
     private double[][] covEigenvectors;
     private int size;
     private double[][] principalEigenvectors;
+    private double[][] weightVectors;
 
     /**
      * Konstuktorille annetaan kuvan koko ja se asettaa tarvittavat muuttujat sen mukaan.
@@ -44,56 +47,54 @@ public class UiLogic {
         innerproductData = new double[files.length][files.length];
     }
     /**
-     * Tunnistaa annetuista kuvista montako kasvoja on ja kuinka monta ei kasvoja on.
+     * Tunnistaa annetuista kuvista montako kasvoja on.
      * @param faces File-lista, jossa on tunnistettavat kuvat
      * @return Palauttaa listan, jossa ensimmäinen lakio on tunnistettujen naamojen määrä ja toinen on määrä, joita ei tunnistettu kasvoiksi.
      */
-    public int[] recognizeFaces(File[] faces) {
-        int numberOfFaces = 0;
-        int numberOfNotFaces = 0;
-        int correct = 0;
-        int incorrect = 0;
-        double[] faceValues = new double[100];
-        double[] otherValues = new double[100];
-        double sum = 0;
+    public String[] recognizeFaces(File[] faces) {
+        File[] detectedFaces = new File[faces.length];
+        int index = 0;
         int[] minMaxThresholds = calculateThresholds();
-        int min = minMaxThresholds[0];
-        int max = minMaxThresholds[1];
+        double[] facess = new double[100];
+        double[] others = new double[100];
+        int min = 0;
+        int max = 6172;
+        int sum =0;
         for (int i = 0; i < faces.length; i++) {
             File f = faces[i];
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
-            double b = imageIsAFace(principalEigenvectors, faceVector, meanface);
-            if (i < 100) {
-                faceValues[i] = b;
-            } else {
-                otherValues[i - 100] = b;
-            }
+            double b = imageIsAFace(principalEigenvectors, weightVectors, faceVector, meanface);
             sum += b;
-            if (b < max && b > min) {
-                numberOfFaces++;
-                if (i < 100) {
-                    correct++;
-                } else {
-                    incorrect++;
-                }
+            if(i==99) {
+                System.out.println("avg: "+sum/100);
+                sum = 0;
+                System.out.println("others:");
+            }
+            if ( i<100) {
+                facess[i] = b;
             } else {
-                numberOfNotFaces++;
-                if (i < 100) {
-                    incorrect++;
-                } else {
-                    correct++;
-                }
+                others[i-100] = b;
+            }
+            System.out.println(b);
+            if (b < max && b > min) {
+                detectedFaces[index] = f;
+                index++;
+            } 
+        }
+        System.out.println("avg: "+sum/100);
+        System.out.println(Arrays.toString(facess));
+        System.out.println(Arrays.toString(others));
+        String[] returnList = new String[index];
+        for (int i = 0; i<faces.length; i++) {
+            if(detectedFaces[i] != null) {
+                returnList[i] = detectedFaces[i].getName();
             }
         }
-        System.out.println(Arrays.toString(faceValues));
-        System.out.println(faceValues.length);
-        System.out.println(Arrays.toString(otherValues));
-        System.out.println(otherValues.length);
-        return new int[] {numberOfFaces, numberOfNotFaces, correct, incorrect};
+        return returnList;
     }
     /**
-     * Metodilla voidaan asettaa valmiista .csv tiedostoista ominaisvetorit ja keskiarvo kasvot.
-     * Tällöin ei tarvitse generoida aina uudelleen kasvoja.
+     * Metodilla voidaan asettaa valmiista .csv tiedostoista ominaisvetorit ja keskiarvo kasvot.Tällöin ei tarvitse generoida aina uudelleen kasvoja.
+     * @return Palauttaa kuluneen ajan
      */
     public long useExisting() {
         long start = System.nanoTime();
@@ -171,11 +172,29 @@ public class UiLogic {
         meanFaceProgress();
         innerProductProgress();
         eigenvaluesAndVectors();
+        normalizeEigenvectorsProcess();
         principalEigenvectorsProcess();
+        createWeightVectors(principalEigenvectors);
         long end = System.nanoTime();
         writeMatrix("eigen", principalEigenvectors);
         writeMatrix("mean", new double[][] {meanface});
         return (end - start);
+    }
+    
+    public void createWeightVectors(double[][] eigenvectors) {
+        double[][] weights = new double[eigenvectors.length][eigenvectors.length];
+        for (int i = 0; i < eigenvectors.length; i++) {
+            double[] weigth = new double[eigenvectors.length];
+            for (int j = 0; j < eigenvectors.length; j++) {
+                try {
+                    weigth[j] = matop.dotproduct(eigenvectors[i], eigenvectors[j]);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+            weights[i] = weigth;
+        }
+        weightVectors = weights;
     }
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
@@ -199,19 +218,6 @@ public class UiLogic {
     private void meanFaceProgress() {
         meanface = matop.meanOfMatrixByRow(dataMatrix);
         dataMatrix = matop.subtract(dataMatrix, meanface);
-        double[][] meanf = new double[size][size];
-        int row = -1;
-        int col = 0;
-        for (int i = 0; i < meanface.length; i++) {
-            if (i % size == 0) {
-                row++;
-                col = 0;
-            }
-            meanf[col][row] = meanface[i];
-            col++;
-        }
-        imgProcess.matrixToImage(meanf, size, size, "meanface");
-        
     }
     /**
      * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon ominaisarvot ja -vektorit
@@ -219,7 +225,6 @@ public class UiLogic {
      */
     private void eigenvaluesAndVectors() {
         double[][][] values = matop.getEigenpairs(innerproductData, files.length);
-        //Otetaan ominaisarvot diagonaalista.
         eigenvalues = values[0][0];
         innerEigenvectors = values[1];
         try {
@@ -227,7 +232,6 @@ public class UiLogic {
             covEigenvectors = matop.multiply(dataMatrix, innerEigenvectors);
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            ex.printStackTrace(System.out);
         }
     }
     /**
@@ -273,17 +277,35 @@ public class UiLogic {
      * @param threshold Määrä, jonka perusteella määritellään onko kasvot vai ei. 
      * @return 
      */
-    private double imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace) {
+    private double imageIsAFace(double[][] eigenFaces, double[][] weightVectors, double[] imageVector, double[] meanFace) {
         try {
             double[] meanAdjustedFace = matop.vectorSubtract(imageVector, meanFace);
-            double[] weightVector = matop.projectionToFace(eigenFaces, meanAdjustedFace);
-            double[] subtraction = matop.vectorSubtract(meanAdjustedFace, weightVector);
-            double length = matop.vectorLength(subtraction);
-            return length;
+            double[] weightVector = matop.multiply(matop.transpose(eigenFaces), meanAdjustedFace);
+            double[] sum = new double[meanAdjustedFace.length];
+            double min = 0;
+            for(int i=0; i<weightVector.length; i++) {
+               double length = matop.vectorLength(matop.vectorSubtract(weightVector, weightVectors[i]));
+               if(min == 0 || length < min) {
+                   min = length;
+               }
+            }
+            return min;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return 0;
+    }
+    
+    private double[] calculateWeightVector(double[][] eigenFaces, double[] vector) {
+        double[] weightVector = new double[eigenFaces.length];
+        for (int i = 0; i<eigenFaces.length; i++) {
+            try {
+                weightVector[i] = matop.dotproduct(eigenFaces[i], vector);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        return weightVector;
     }
     
     /**

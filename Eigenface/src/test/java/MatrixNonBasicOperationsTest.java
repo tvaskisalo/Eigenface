@@ -209,8 +209,6 @@ public class MatrixNonBasicOperationsTest {
         answer[0] = eigenv1;
         answer[1] = eigenv2;
         double[][] result = matop.getEigenpairs(matrix, 2)[1];
-        System.out.println(Arrays.deepToString(result));
-        System.out.println(Arrays.deepToString(answer));
         assertTrue(matop.matrixEquals(answer, result));
     }
     
@@ -225,8 +223,6 @@ public class MatrixNonBasicOperationsTest {
         answer[0] = eigenv1;
         answer[1] = eigenv2;
         double[][] result = matop.getEigenpairs(matrix, 2)[1];
-        System.out.println(Arrays.deepToString(result));
-        System.out.println(Arrays.deepToString(answer));
         assertTrue(matop.matrixEquals(answer, result));
     }
     

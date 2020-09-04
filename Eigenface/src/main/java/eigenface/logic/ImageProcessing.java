@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
@@ -38,27 +37,6 @@ public class ImageProcessing {
         return directory.listFiles();
     }
     
-    /**
-     * Metodilla voidaan tarkistaa, onko annettu tiedosto kuvatiedosto vai ei.
-     * @param file Tarkisteltava tiedosto
-     * @return Onko tiedosto kuvatiedosto
-     */
-    public boolean fileIsImage(File file) {
-        String name = file.getName();
-        int indexOfExtension = name.lastIndexOf(".");
-        if (indexOfExtension == -1) {
-            return false;
-        }
-        String extension = name.substring(indexOfExtension).toLowerCase();
-        String[] imageExtensions = {".png", ".jpg", ".jpeg"};
-        for (String e:imageExtensions) {
-            if (extension.equals(e)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
     
     /**
      * Metodilla muutetaan kuvasta halutun kokoinen mustavalkoinen kuva. Tällä hetkellä se myös tallentaa ne kansioon "./images/ProcessedImages/".
@@ -98,30 +76,5 @@ public class ImageProcessing {
         }
         return pixelMatrix;
     }
-    
-    
-    /**
-     * Metodi muuttaa matriisista mustavalkoisen kuvan. Anntetun matriisin arvot täytyvät olla välillä 0-255.
-     * @param matrix Kuvaksi muutettava matriisi
-     * @param width Kuvan leveys
-     * @param height Kuvan korkeus
-     * @param name Väliaikainen parametri, jonka avulla voidaan tallentaa matriisit kuviksi.
-     */
-    public void matrixToImage(double[][] matrix, int width, int height, String name) {
-        BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                int value = (int) matrix[i][j];
-                Color c = new Color(value, value, value);
-                output.setRGB(i, j, c.getRGB());
-            }
-        }
-        try {
-            ImageIO.write(output, "png", new File("./images/ProcessedImages/" + name + ".png"));
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-    
     
 }
