@@ -4,17 +4,9 @@
  * and open the template in the editor.
  */
 package eigenface.logic;
+import eigenface.dao.Dao;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Luokalla voidaan suorittaa eigenface-prosessin eri vaiheita.
@@ -32,7 +24,7 @@ public class UiLogic {
     private double[][] covEigenvectors;
     private int size;
     private double[][] principalEigenvectors;
-    private double[][] weightVectors;
+    private Dao dao;
 
     /**
      * Konstuktorille annetaan kuvan koko ja se asettaa tarvittavat muuttujat sen mukaan.
@@ -45,123 +37,21 @@ public class UiLogic {
         matop = new MatrixOperations();
         dataMatrix = new double[files.length][size * size];
         innerproductData = new double[files.length][files.length];
+        dao = new Dao(size);
     }
-    /**
-     * Tunnistaa annetuista kuvista montako kasvoja on.
-     * @param faces File-lista, jossa on tunnistettavat kuvat
-     * @return Palauttaa listan, jossa ensimmäinen lakio on tunnistettujen naamojen määrä ja toinen on määrä, joita ei tunnistettu kasvoiksi.
-     */
-    public String[] recognizeFaces(File[] faces) {
-        File[] detectedFaces = new File[faces.length];
-        int index = 0;
-        int[] minMaxThresholds = calculateThresholds();
-        double[] facess = new double[100];
-        double[] others = new double[100];
-        int min = 0;
-        int max = 6172;
-        int sum =0;
-        for (int i = 0; i < faces.length; i++) {
-            File f = faces[i];
-            double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
-            double b = imageIsAFace(principalEigenvectors, weightVectors, faceVector, meanface);
-            sum += b;
-            if(i==99) {
-                System.out.println("avg: "+sum/100);
-                sum = 0;
-                System.out.println("others:");
-            }
-            if ( i<100) {
-                facess[i] = b;
-            } else {
-                others[i-100] = b;
-            }
-            System.out.println(b);
-            if (b < max && b > min) {
-                detectedFaces[index] = f;
-                index++;
-            } 
-        }
-        System.out.println("avg: "+sum/100);
-        System.out.println(Arrays.toString(facess));
-        System.out.println(Arrays.toString(others));
-        String[] returnList = new String[index];
-        for (int i = 0; i<faces.length; i++) {
-            if(detectedFaces[i] != null) {
-                returnList[i] = detectedFaces[i].getName();
-            }
-        }
-        return returnList;
-    }
+    
     /**
      * Metodilla voidaan asettaa valmiista .csv tiedostoista ominaisvetorit ja keskiarvo kasvot.Tällöin ei tarvitse generoida aina uudelleen kasvoja.
      * @return Palauttaa kuluneen ajan
      */
     public long useExisting() {
         long start = System.nanoTime();
-        principalEigenvectors = readMatrix("eigen");
-        meanface = readMatrix("mean")[0];
+        principalEigenvectors = dao.readMatrix("eigen");
+        meanface = dao.readMatrix("mean")[0];
         long end = System.nanoTime();
-        return (end-start);
+        return (end - start);
     }
-    /**
-     * Metodi kirjoittaa matriisin .csv-tiedostoon
-     * @param name Tiedoston nimi. Tämä on kovakoodattu olemaan joko "eigen" tai "mean", viitaten joko ominaisvektoreihin tai keskiarvo kasvoihin.
-     * @param matrix Matriisi, joka kirjoitettaan tiedostoksi
-     */
-    public void writeMatrix(String name, double[][] matrix) {
-        try {
-            BufferedWriter buffWriter = new BufferedWriter(new FileWriter("./existingData/" + name + size + ".csv"));
-            for (int i = 0; i < matrix[0].length; i++) {
-                for (int j = 0; j < matrix.length; j++) {
-                    if (j + 1 == matrix.length) {
-                        buffWriter.write(matrix[j][i] + "");
-                    } else {
-                        buffWriter.write(matrix[j][i] + ",");
-                    }
-                }
-                if (i + 1 != matrix[0].length) {
-                    buffWriter.newLine();
-                }
-            }
-            buffWriter.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        } 
-    }    
-    /**
-     * Metodi lukee .csv-tiedoston ja palauttaa matriisin.
-     * @param name Tiedoston nimi. Tämä on kovakoodattu olemaan joko "eigen" tai "mean", viitaten joko ominaisvektoreihin tai keskiarvo kasvoihin.
-     * @return Palauttaa matriisin, jonka alkiot ovat joko ominaisvektorit tai keskiarvo kasvot.
-     */
-    public double[][] readMatrix(String name) {
-        double[][] returnValue = new double[0][0];
-        int j = 0;
-        try {
-            BufferedReader buffReader = Files.newBufferedReader(Paths.get("./existingData/" + name + size + ".csv"), StandardCharsets.US_ASCII);
-            String line = buffReader.readLine();
-            if (line != null) {
-                String[] numbers = line.split(",");
-                if (name.equals("mean")) {
-                    returnValue = new double[1][size * size];
-                } else {
-                    returnValue = new double[numbers.length][size * size];
-                }
-            }
-            while (line != null) {
-                String[] numbers = line.split(",");
-                for (int i = 0; i < numbers.length; i++) {
-                    returnValue[i][j] = Double.valueOf(numbers[i]);
-                }
-                j++;
-                line = buffReader.readLine();
-            }
-            buffReader.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println(name);
-        }
-        return returnValue;
-    }
+    
     /**
      * Luokan "pää"-metodi, jonka avulla voidaan suorittaa kaikki eigenfacen vaiheet.
      * @return palauttaa kuluneen ajan nanosekunneissa
@@ -174,31 +64,15 @@ public class UiLogic {
         eigenvaluesAndVectors();
         normalizeEigenvectorsProcess();
         principalEigenvectorsProcess();
-        createWeightVectors(principalEigenvectors);
         long end = System.nanoTime();
-        writeMatrix("eigen", principalEigenvectors);
-        writeMatrix("mean", new double[][] {meanface});
+        dao.writeMatrix("eigen", principalEigenvectors);
+        dao.writeMatrix("mean", new double[][] {meanface});
         return (end - start);
     }
     
-    public void createWeightVectors(double[][] eigenvectors) {
-        double[][] weights = new double[eigenvectors.length][eigenvectors.length];
-        for (int i = 0; i < eigenvectors.length; i++) {
-            double[] weigth = new double[eigenvectors.length];
-            for (int j = 0; j < eigenvectors.length; j++) {
-                try {
-                    weigth[j] = matop.dotproduct(eigenvectors[i], eigenvectors[j]);
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
-            weights[i] = weigth;
-        }
-        weightVectors = weights;
-    }
+    
     /**
      * Metodi prosessoi jokaisen kuvan luokan ImageProcessing avulla, sekä muuttaa ne matriisiksi luokan MatixOperations avulla
-     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
     private void imageToMatrixProgress() {
         for (int i = 0; i < files.length; i++) {
@@ -212,8 +86,7 @@ public class UiLogic {
         }
     }
     /**
-     * Metodi laskee keskiarvonaaman ja vähentää sen kaikista naama-vektoreista
-     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     * Metodi laskee keskiarvonaaman ja vähentää sen kaikista kuva-vektoreista
      */
     private void meanFaceProgress() {
         meanface = matop.meanOfMatrixByRow(dataMatrix);
@@ -221,7 +94,6 @@ public class UiLogic {
     }
     /**
      * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon ominaisarvot ja -vektorit
-     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */
     private void eigenvaluesAndVectors() {
         double[][][] values = matop.getEigenpairs(innerproductData, files.length);
@@ -235,8 +107,7 @@ public class UiLogic {
         }
     }
     /**
-     * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon
-     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     * Metodi laskee kuvamatriisin transpoosin ja kuvamatriisin tulon.
      */
     private void innerProductProgress() {
         try {
@@ -247,15 +118,14 @@ public class UiLogic {
     }
     /**
      * Metodi normalisoi kaikki covarianssimatriisin ominaisvektorit
-     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
      */    
     private void normalizeEigenvectorsProcess() {
         covEigenvectors = matop.normalizeVectors(covEigenvectors);
     }
     
     /**
-     * Metodi järjestää covarianssimatriisin ominaisvektorit vastaamaan niiden ominaisarvojen suuruusjärjestystä laskevasti.
-     * @param processInfo Metodi muuttaa infoa prosessin mukaan.
+     * Metodi laskee, kuinka monta ominaisvektoria tarvitaan, jotta se vastaa 95% ominaisarvojen summasta.
+     * Tämä tehdään, sillä pienet ominaisarvot ja niiden ominaisvektorit vaikuttavat kasvojentunnistukseen erittäin vähän.
      */
     private void principalEigenvectorsProcess() {
         int count = matop.calculatePrincipal(eigenvalues, 0.95);        
@@ -268,54 +138,48 @@ public class UiLogic {
     /**
      * Metodilla voidaan tutkia onko annetussa kuvavektorissa naama vai ei. 
      * Tämän se tekee käyttämällä faktaa, että yleensä ottaen, jos kuvassa on kasvot, niin siitä tehty matriisi ei muutu paljoa, 
-     * kun se projektoidaan "naama"-avaruuten kuvamatriisin kovarianssimatriisin ominaisarvojen perusteella.
+     * kun se projektoidaan "naama"-avaruuten, eli kovarianssimatriisin ominaisavaruuteen.
      * Tällä hetkellä metodin tunnistaa kasvot noin 80% ajasta, kun kuvassa on naama ja
-     * tunnistaa noin 70% ajasta, että kuvassa ei ole naamaa, jos siinä ei ole naama silloin.
+     * tunnistaa noin 30% ajasta, että kuvassa ei ole naamaa, jos siinä ei ole naama.
+     * Empiirisen testauksen nojalla, se on oikeassa noin 60-65% ajasta, riipuen harjoitusaineistosta
      * @param eigenFaces Kuvamatriisin kovarianssimatriisin ominaisarvot
      * @param imageVector Tutkittava kuvavektori
      * @param meanFace Keskiverto naamavektori
-     * @param threshold Määrä, jonka perusteella määritellään onko kasvot vai ei. 
-     * @return 
+     * @return Palauttaa kuvavektorin ja sen projektion erotuksen pituuden.
      */
-    private double imageIsAFace(double[][] eigenFaces, double[][] weightVectors, double[] imageVector, double[] meanFace) {
+    private double imageIsAFace(double[][] eigenFaces, double[] imageVector, double[] meanFace) {
         try {
             double[] meanAdjustedFace = matop.vectorSubtract(imageVector, meanFace);
             double[] weightVector = matop.multiply(matop.transpose(eigenFaces), meanAdjustedFace);
-            double[] sum = new double[meanAdjustedFace.length];
-            double min = 0;
-            for(int i=0; i<weightVector.length; i++) {
-               double length = matop.vectorLength(matop.vectorSubtract(weightVector, weightVectors[i]));
-               if(min == 0 || length < min) {
-                   min = length;
-               }
+            double[] sum = new double[meanFace.length];
+            for (int i = 0; i < weightVector.length; i++) {
+                sum = matop.vectorAdd(sum, matop.vectorMultiply(eigenFaces[i], weightVector[i]));
             }
-            return min;
+            return matop.vectorLength(sum);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return 0;
     }
     
-    private double[] calculateWeightVector(double[][] eigenFaces, double[] vector) {
-        double[] weightVector = new double[eigenFaces.length];
-        for (int i = 0; i<eigenFaces.length; i++) {
-            try {
-                weightVector[i] = matop.dotproduct(eigenFaces[i], vector);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        return weightVector;
-    }
-    
     /**
-     * Metodi laskee minimi ja maksimi rajat tunnistettaville kasvoille. Liian suuret ja liian pienet arvot ovat yleensä ottaen muita kuin kasvoja.
-     * Repositoriosta löytyy perusteluita, miksi rajat ovat nämä. 
-     * @return Palauttaa listan, jossa ensimmäinen alkio on min ja toinen max.
+     * Tunnistaa annetuista kuvista montako kasvoja on.
+     * @param faces File-lista, jossa on tunnistettavat kuvat
+     * @return Palauttaa listan, jossa on kaikkien tunnistettujen kuvien kasvot.
      */
-    private int[] calculateThresholds() {
-        int min = 8400 * size;
-        int max = 36000 * size;
-        return new int[] {min, max};
+    public String[] recognizeFaces(File[] faces) {
+        String[] detectedFaces = new String[faces.length];
+        int index = 0;
+        int max = 66;
+        for (int i = 0; i < faces.length; i++) {
+            File f = faces[i];
+            double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
+            double b = imageIsAFace(principalEigenvectors, faceVector, meanface) / size;
+            if (b < max) {
+                detectedFaces[index] = f.getName();
+                index++;
+            } 
+        }
+        return detectedFaces;
     }
 }

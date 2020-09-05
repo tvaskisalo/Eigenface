@@ -62,6 +62,8 @@
                     <excludes>
                         <exclude>eigenface/Main.class</exclude>
                         <exclude>eigenface/ui/**/*</exclude>
+                        <exclude>eigenface/logic/UiLogic.class</exclude>
+                        <exclue>eigenface/dao/Dao.class</exclue>
                     </excludes>
                 </configuration>
                 <executions>

@@ -1,6 +1,5 @@
 
 import eigenface.logic.MatrixOperations;
-import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -114,31 +113,8 @@ public class MatrixBasicOperationsTest {
     }
     
     
-    @Test
-    public void matrixSubtractionReturnsCorrectAnswer1() {
-        double[][] matrixA = new double[3][3];
-        double[][] matrixB = new double[3][3];
-        double[][] result = new double[3][3];
-        
-        for(int i = 0; i<3; i++) {
-            for(int j = 0; j<3; j++) {
-                matrixA[i][j]=i+j;
-                matrixB[i][j]=i-j;
-                result[i][j]=j+j;
-            }
-        }
-        
-        try {
-            double[][] add = matop.subtract(matrixA, matrixB);
-            assertTrue(matop.matrixEquals(add, result));
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-            assertTrue(false);
-        }
-    }
-    
     @Test 
-    public void matrixSubtractionReturnsCorrectAnswer2() {
+    public void matrixSubtractionReturnsCorrectAnswer1() {
         double[][] matrixA = new double[100][100];
         double[] value = new double[100];
         double[][] result = new double[100][100];
@@ -160,7 +136,7 @@ public class MatrixBasicOperationsTest {
     }
     
     @Test 
-    public void matrixSubtractionReturnsCorrectAnswer3() {
+    public void matrixSubtractionReturnsCorrectAnswer2() {
         double[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};
         double value = 2;
         
@@ -171,7 +147,7 @@ public class MatrixBasicOperationsTest {
     }
     
     @Test 
-    public void matrixSubtractionReturnsCorrectAnswer4() {
+    public void matrixSubtractionReturnsCorrectAnswer3() {
         double[][] matrix = {{1,2,3},{4,5,6},{7,8,9}};
         double value = -5;
         
@@ -181,19 +157,6 @@ public class MatrixBasicOperationsTest {
         assertTrue(matop.matrixEquals(correct, substraction));
     }
     
-    
-    @Test
-    public void matrixSubtractionThrowsExceptionWithBadMatrixes() {
-        double[][] matrixA = new double[10][100];
-        double[][] matrixB = new double[100][10];
-        boolean caught = false;
-        try {
-            matop.subtract(matrixA, matrixB);
-        } catch(Exception e) {
-            caught = true;
-        }
-        assertTrue(caught);
-    }
     
     @Test
     public void matrixMultiplicationThrowsExceptionWithBadMatrixes1() {

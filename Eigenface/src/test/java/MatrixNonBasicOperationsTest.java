@@ -39,38 +39,6 @@ public class MatrixNonBasicOperationsTest {
     }
     
     @Test
-    public void vectorSubtractMeanReturnsCorrectVector1() {
-        double[] vector = {1,2,3,4,5,6};
-        double[] correct = {-2.5, -1.5, -0.5, 0.5, 1.5, 2.5};
-        double[] result = matop.vectorSubtractMean(vector);
-        assertTrue(Arrays.equals(correct, result));
-    }
-    
-    @Test
-    public void vectorSubtractMeanReturnsCorrectVector2() {
-        double[] vector = {10,1,9,2,8,3,7,4,6,5};
-        double[] correct = {4.5, -4.5, 3.5, -3.5, 2.5, -2.5, 1.5, -1.5, 0.5, -0.5};
-        double[] result = matop.vectorSubtractMean(vector);
-        assertTrue(Arrays.equals(correct, result));
-    }
-    
-    @Test
-    public void getDiagonalReturnsCorrectVector1() {
-        double[][] matrix = {{1,0,0},{0,1,0},{0,0,1}};
-        double[] correct = {1,1,1};
-        double[] result = matop.getDiagonal(matrix);
-        assertTrue(Arrays.equals(result, correct));
-    }
-    
-    @Test
-    public void getDiagonalReturnsCorrectVector2() {
-        double[][] matrix = {{2,7,45},{121,24,12.5093},{12.341,0,121.23}};
-        double[] correct = {2,24,121.23};
-        double[] result = matop.getDiagonal(matrix);
-        assertTrue(Arrays.equals(result, correct));
-    }
-    
-    @Test
     public void calculatePrincipalReturnsCorrectInt1(){
         double[] eigenValues = {10,9,8,7,6,5,4,3,2,1};
         double thresHold = 0.95;
@@ -226,4 +194,22 @@ public class MatrixNonBasicOperationsTest {
         assertTrue(matop.matrixEquals(answer, result));
     }
     
+    @Test
+    public void rewriteInTermsOfTheBasisReturnsCorrectAnswer1() {
+        double[][] matrix = {{1,3},{2,4}};
+        double value = 4;
+        double[] vector = {1,2};
+        double[][] returnValue = matop.rewriteInTermsOfTheBasis(matrix, value, vector);
+        double[][] correct = {{-3,-5},{-6,-12}};
+        assertTrue(matop.matrixEquals(returnValue, correct));
+    }
+    
+    @Test
+    public void rewriteInTermsOfTheBasisReturnsCorrectAnswer2() {
+        double[][] matrix = {{2,5,-9}, {-6,-1,-7},{0,9,7}};
+        double value = -8;
+        double[] vector = {-1.5, 2.7, 9.2};
+        double[][] returnValue = matop.rewriteInTermsOfTheBasis(matrix, value, vector);
+        double[][] correct = {{230.4, -871.2, -708.00}, {-414.72, 1568.16, 1274.40}, {-1413.12, 5242.36, 4342.40}};
+    }
 }

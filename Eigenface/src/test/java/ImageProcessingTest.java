@@ -1,9 +1,10 @@
 
 import eigenface.logic.ImageProcessing;
+import eigenface.logic.MatrixOperations;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.io.File;
+import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,11 +22,13 @@ import static org.junit.Assert.*;
 public class ImageProcessingTest {
     private ImageProcessing img;
     private File testimg;
+    private MatrixOperations matop;
     
     @Before
     public void setUp() {
         img = new ImageProcessing();
         testimg = new File("./images/TestImage").listFiles()[0];
+        matop = new MatrixOperations();
     }
     
     
@@ -68,5 +71,13 @@ public class ImageProcessingTest {
         }
         
         assertTrue(t);
+    }
+    
+    @Test
+    public void imageToMatrixReturnsCorrectAnswer() {
+        double[][] correct = {{255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 205.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 251.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 205.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 185.0, 255.0}, {255.0, 255.0, 255.0, 205.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}, {255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0, 255.0}};
+        BufferedImage image = img.processImage(testimg, 10, 10);
+        double[][] result = img.imageToMatrix(image);
+        assertTrue(matop.matrixEquals(correct, result));
     }
 }

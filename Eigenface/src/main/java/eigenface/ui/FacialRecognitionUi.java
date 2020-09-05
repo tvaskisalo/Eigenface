@@ -17,7 +17,7 @@ import javafx.scene.layout.BorderPane;
 
 /**
  *  Luokka on vastuussa kasvojentunnistukseen liityvän käyttöliittymän rakentamisesta
- * 
+ *  Luokassa on indeksin kasvattamiseen ja vähentämiseen erilliset metodit, jotta voidaan kiertää lambda-funktioiden rajoituksia.
  */
 public class FacialRecognitionUi {
     private int index;
@@ -53,16 +53,20 @@ public class FacialRecognitionUi {
         gp.add(images, 0, 3);
         return gp;
     }
-    
+    /**
+     * Metodi luo annetusta listasta käyttöliittymän, jota voidaan selata ja katsoa, mitkä kuvat tunnistettiin kasvoiksi
+     * @param imageName Lista, jossa on kaikkien tunnistettujen kasvojen tiedoston nimet.
+     * @return Palauttaa BorderPane-olion, jossa on "dia-esitys" kasvoista.
+     */
     public BorderPane createImageViewerUi(String[] imageName) {
         BorderPane returnValue = new BorderPane();
         Button next = new Button("Next");
         Button previous = new Button("Previous");
         Image[] images = new Image[imageName.length];
         index = 0;
-        maxIndex = imageName.length-1;
+        maxIndex = imageName.length - 1;
         for (int i = 0; i < imageName.length; i++) {
-            images[i] = new Image("file:./images/DetectFaces/"+imageName[i]);
+            images[i] = new Image("file:./images/DetectFaces/" + imageName[i]);
         }
         ImageView imageViewer = new ImageView();
         imageViewer.setImage(images[0]);
@@ -78,7 +82,10 @@ public class FacialRecognitionUi {
         });
         return returnValue;
     }
-    
+    /**
+     * Kasvattaa kuvan indeksiä. Jos se kasvaa yli listan pituuden asettaa se indeksin nollaksi.
+     * @return Palauttaa indeksin 
+     */
     private int nextIndex() {
         index++;
         if (index > maxIndex) {
@@ -86,7 +93,10 @@ public class FacialRecognitionUi {
         }
         return index;
     }
-    
+    /**
+     * Vähentää kuvan indeksiä. Jos se vähenee negatiivisesksi asettaa se indeksin suurimmaksi mahdolliseksi.
+     * @return Palauttaa indeksin
+     */
     private int previousIndex() {
         index--;
         if (index < 0) {

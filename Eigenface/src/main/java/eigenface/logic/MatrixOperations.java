@@ -5,10 +5,6 @@
  */
 package eigenface.logic;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Luokalla voidaan laskea joitain matriisien peruslaskutoimituksia, sekä muuttamaan
  * matriisin vektoriksi ja vähentämään vektorista keskiarvon, sekä tekemään vähän kaikkea muutakin.
@@ -17,39 +13,18 @@ import java.util.logging.Logger;
 public class MatrixOperations {
     
     /**
-     * Metodiin annetaan kaksi matriisia ja se palauttaa matriisien erotuksen.
-     * Metodi heittää poikkeuksen, jos matriisien rivien tai sarakkeiden määrä on eri.
-     * 
-     * @param matrixA Ensimmäinen matriisi
-     * @param matrixB Toinen matriisi
-     * @return Metodi palauttaa matriisien erotuksen
-     * @throws Exception Toistaiseksi heittää geneerisen poikkeuksen, jos matriisit ovat eri muotoisia.
-     */
-    public double[][] subtract(double matrixA[][], double matrixB[][]) throws Exception {
-        if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length) {
-            throw new Exception("Incorrect matrix dimensions");
-        }
-        double[][] subtraction = new double[matrixA.length][matrixA[0].length];
-        
-        for (int i = 0; i < matrixA.length; i++) {
-            for (int j = 0; j < matrixA[0].length; j++) {
-                subtraction[i][j] = matrixA[i][j] - matrixB[i][j];
-            }
-        }
-        
-        return subtraction;
-    }
-    /**
-     * Metodiin annetaan matriisi ja arvo. Metodi vähentää jokaisesta matriisin solusta annetun arvon.
+     * Metodiin annetaan matriisi ja vektori. Metodi vähentää jokaisesta matriisin sarakkeesta annetun vektori.
      * @param matrix Matriisi
      * @param vector Vähennettävä vektori
-     * @return Metodi palauttaa matriisin, josta on vähennettu annettu arvo.
+     * @return Metodi palauttaa matriisin, jonka sarakkeista on vähennetty annettu vektori.
      */
     public double[][] subtract(double matrix[][], double[] vector) {
         double[][] subtraction = new double[matrix.length][matrix[0].length];
         for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                subtraction[i][j] = matrix[i][j] - vector[j];
+            try {
+                subtraction[i] = vectorSubtract(matrix[i], vector);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
             }
         }
         
@@ -96,7 +71,6 @@ public class MatrixOperations {
         
         return subtraction;
     }
-    
     /**
      * Metodiin annetaan kaksi vektoria ja se palauttaa niiden summan ja heittää poikkeuksen, jos vektorit ovat eri pituisia.
      * @param vectorA Ensimmäinen vektori
@@ -116,7 +90,6 @@ public class MatrixOperations {
         
         return subtraction;
     }
-    
     /**
      * Metodilla voidaan tarkistaa, onko matriisit samat. Pääosin vain testienkäyttöön
      * @param matrixA Ensimmäinen tarkasteltava matriisi
@@ -156,7 +129,6 @@ public class MatrixOperations {
         }
         return true;
     }
-    
     /**
      * Metodi laskee annettujen matriisien matriisi tulon kertomalla matriisin A
      * matriisilla B. 
@@ -165,7 +137,6 @@ public class MatrixOperations {
      * @return Palauttaa matriisitulon matrixA*matrixB
      * @throws Exception Heittää poikkeuksen, jos matriisin A sarakkeiden määrä ja matriisin B rivien määrä on eri.
      */
-    
     public double[][] multiply(double matrixA[][], double matrixB[][]) throws Exception {
         if (matrixA.length != matrixB[0].length) {
             throw new Exception("Incorrect matrix dimensions");
@@ -226,9 +197,6 @@ public class MatrixOperations {
         }
         return result;
     }
-    
-    
-    
     /**
      * Metodi muuttaa matriisista vektorin littämällä rivit yhteen.
      * Palautettavan vektorin pituus on matriisien rivien määrä kerrottuna sarakkeiden määrällä
@@ -265,25 +233,6 @@ public class MatrixOperations {
         
         return returnVec;
     }
-    
-    /**
-     * Metodi vähentää annetun vektorin termeistä vektroin termien keskiarvon.
-     * Tämä metodi on todennäköisesti turha. 
-     * @param vector Laskentaan käytetty vektori
-     * @return Palauttaa annetun vektorin, josta jokaisesta termistä on vähennetty vektorien termien keskiarvo.
-     */
-    public double[] vectorSubtractMean(double[] vector) {
-        double[] returnVector = new double[vector.length];
-        double sum = 0;
-        for (int i = 0; i < vector.length; i++) {
-            sum += vector[i];
-        }
-        double mean = sum / vector.length;
-        for (int j = 0; j < vector.length; j++) {
-            returnVector[j] = vector[j] - mean;
-        }
-        return returnVector;
-    }
     /**
      * Metodi laskee matriisin rivien keskiarvon, eli summaa kaikki rivin alkiot ja jakaa ne rivien määrällä.
      * @param matrix Matriisi
@@ -319,25 +268,6 @@ public class MatrixOperations {
         }
         
         return transpose;
-    }
-    
-    
-    
-    /**
-     * Metodi ottaa neliömatriisin diagonaalilla olevat arvot ja paluttaa ne vektorina.
-     * @param matrix Annettu neliömatriisi
-     * @return Diagonaalilla olevat arvot vektorina.
-     */
-    public double[] getDiagonal(double[][] matrix) {
-        double[] diagonal = new double[matrix.length];
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                if (i == j) {
-                    diagonal[i] = matrix[i][j];
-                }
-            }
-        }
-        return diagonal;
     }
     /**
      * Metodilla voidaan laskea, mitkä suurimmat ominaisarvot tarvitaan, 
@@ -410,26 +340,6 @@ public class MatrixOperations {
             multiplication[i] = vector[i] * value;
         }
         return multiplication;
-    }
-    
-    /**
-     * Metodi projektoi vektorin meanAdjustedFace, joka on kuvavektori, josta on otettu pois keskiarvoinen kuvavektori,
-     * ominaisvektoreiden viritämälle vektoriavaruudelle.
-     * @param eigenvectors Matriisi, jossa on sarakkeina ominaisarvot
-     * @param meanAdjustedFace kuvavektori, josta on otettu pois keskiarvoinen kuvavektori
-     * @return Palauttaa projektion
-     */
-    public double[] projectionToFace(double[][] eigenvectors, double[] meanAdjustedFace) {
-        double[] value = new double[eigenvectors[0].length];
-        for (int i = 0; i < eigenvectors.length; i++) {
-            try {
-                value = vectorAdd(value, vectorMultiply(eigenvectors[i], meanAdjustedFace[i]));
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-        
-        return value;
     }
     
     /**
@@ -524,6 +434,7 @@ public class MatrixOperations {
             //Tämä on hieman laastarikorjaus. Suurilla ominaisarvoilla ominaisarvon vähentäminen "piilottaa" muut ominaisarvot.
             //Suurille ominaisarvoille voidaan kuitenkin laskea kaikki ominaisparit vähentämällä matriisista ominaisarvon, ominaisvektorin ja ominaisvektorin transpoosin tulo
             //Tämä kuitenkin aiheuttaa paljon epätarkkuutta ominaisvektoreiden arvoille.
+            //Se ei kuitenkaan tässä projektissa haittaa.
             if (eigenvalue > 1000) {
                 copyMatrix = rewriteInTermsOfTheBasis(copyMatrix, eigenvalue, eigenvector);
             } else {
@@ -549,7 +460,6 @@ public class MatrixOperations {
                 newMatrix[i][j] = matrix[i][j] - eigenvalue * eigenvector[i] * eigenvector[j];
             }
         }
-        
         return newMatrix;
     }
 }

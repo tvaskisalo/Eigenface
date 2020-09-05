@@ -39,8 +39,7 @@ public class ImageProcessing {
     
     
     /**
-     * Metodilla muutetaan kuvasta halutun kokoinen mustavalkoinen kuva. Tällä hetkellä se myös tallentaa ne kansioon "./images/ProcessedImages/".
-     * Tämä on tarkoitus refaktoroida.
+     * Metodilla muutetaan kuvasta halutun kokoinen mustavalkoinen kuva.
      * @param image Muutettava kuva
      * @param width haluttu kuvan leveys
      * @param height haluttu kuvan korkeus
@@ -76,5 +75,7 @@ public class ImageProcessing {
         }
         return pixelMatrix;
     }
+    
+    
     
 }
