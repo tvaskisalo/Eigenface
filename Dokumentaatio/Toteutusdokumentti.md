@@ -95,7 +95,7 @@ Jokainen tunnistettavan kuvan vektori kerrotaan vaikuttavimpien ominaisvektoreid
 #### Lopput prosessista
 Nyt kerrotaan ominaisvektorit jokaisella painovektorin alkiolla, jotta nähdään sen projektio ominaisvektoreiden virittämällä avaruudella. Tässä käydään kaikki ominaisvektorit läpi, joita on p. Tähän kuluu aikaa O(pm^2). Vähennetään saatu vektori kuvavektorista, josta on vähennetty rivikeskiarvo ja lasketaan tämän pituus.
 Vähennykseen kuluu aikaa O(m^2), sillä käydään vektoreiden alkiot samaan aikaan läpi. Pituuden laskemisessa myös käydään vektoreiden alkiot samaan aikaan läpi.
-Tämän pituuden avulla voidaan tunnistaa onko kuvassa kasvot vai ei.
+Pituus jaetaan pituudella m, jotta se skaalaantuu oikein. Tämän pituuden avulla voidaan tunnistaa onko kuvassa kasvot vai ei.
 Tämä toistetaan e kertaa, joten aikaa kuluu O(epm^2)
 
 Aikavaatimus kasvojentunnistukselle on siis O(epm^2)
