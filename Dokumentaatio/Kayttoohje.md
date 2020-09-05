@@ -7,6 +7,7 @@ Pura ladattu ZIP-tiedosto.
 
 Aseta tunnistettavat kuvat kansioon Eigenface/images/DetectFaces/ ja mahdollinen harjoitusdata kansioon Eigenface/images/InputImages.
 Tunnistettavat kuvat kannattaa olla sellaisia, jotka eivät ole suuria (Full HD-kuvien prosessointi vie kauan) ja kasvojen suu ja silmät tätyisi olla noin samassa kohtaa kuin testiaineiston. 
+Tästä linkissä on hyviä kuvia harjoitusdataksi, sekä kasvojentunnistukseen [Link](https://drive.google.com/drive/folders/1u2xu7bSrWxrbUxk-dT-UvEJq8IjdmNTP). Valitse sieltä kansio thumbnails128x128 ja sieltä jokin kansioista.
 
 Käynnistä sovellus komennolla mvn compile exec:java -Dexec.mainClass=eigenface.Main tai netbeansilla painamalla run-näppäintä.
 
