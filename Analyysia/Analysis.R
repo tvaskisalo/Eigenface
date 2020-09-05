@@ -90,6 +90,8 @@ ts100rtimeFaceAmount200 <- 1.66
 ts100rtimeFaceAmount400 <- 3.43
   
   
+sizes <- c(100,200,400)
+times <- c(1.66, 10.17, 106.71)
 detected25 <- detected(ts100face25, ts100other25)
 sorted25 <- sort(c(ts100face25, ts100other25))
 max25 <- sorted25[which(detected25==max(detected25))]
@@ -114,4 +116,5 @@ print(max(max100))
 plot(sort(c(ts100face50, ts100other50)), detected(ts100face50, ts100other50), main="Harjoituskuvien määrä: 100, Kuvien kanta: 50", xlab="Kuvien painovektorein etäisyys harjoitusdatan painovektoreista", ylab="Tunnistettujen kasvojen pisteet")
 plot(sort(c(ts100face75, ts100other75)), detected(ts100face75, ts100other75), main="Harjoituskuvien määrä: 100, Kuvien kanta: 75", xlab="Kuvien painovektorein etäisyys harjoitusdatan painovektoreista", ylab="Tunnistettujen kasvojen pisteet")
 plot(sort(c(ts100face100, ts100other100)), detected(ts100face100, ts100other100), main="Harjoituskuvien määrä: 100, Kuvien kanta: 100", xlab="Kuvien painovektorein etäisyys harjoitusdatan painovektoreista", ylab="Tunnistettujen kasvojen pisteet")
-
+plot(sizes, times, main="Generointinopeus eri kuvamäärillä", xlab="Kuvien määrä", ylab="Kulunut aika sekunneissa")
+plot(x, x^3, type="l")

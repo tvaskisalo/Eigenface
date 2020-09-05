@@ -59,6 +59,9 @@ public class FacialRecognitionUi {
      * @return Palauttaa BorderPane-olion, jossa on "dia-esitys" kasvoista.
      */
     public BorderPane createImageViewerUi(String[] imageName) {
+        if (imageName.length == 0) {
+            return new BorderPane();
+        }
         BorderPane returnValue = new BorderPane();
         Button next = new Button("Next");
         Button previous = new Button("Previous");
