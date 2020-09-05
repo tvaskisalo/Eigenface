@@ -168,7 +168,7 @@ public class UiLogic {
      * @return Palauttaa listan, jossa on kaikkien tunnistettujen kuvien kasvot.
      */
     public String[] recognizeFaces(File[] faces) {
-        String[] detectedFaces = new String[faces.length];
+        File[] detectedFaces = new File[faces.length];
         int index = 0;
         int max = 66;
         for (int i = 0; i < faces.length; i++) {
@@ -176,10 +176,14 @@ public class UiLogic {
             double[] faceVector = matop.reshapeToVectorByRow(imgProcess.imageToMatrix(imgProcess.processImage(f, size, size)));
             double b = imageIsAFace(principalEigenvectors, faceVector, meanface) / size;
             if (b < max) {
-                detectedFaces[index] = f.getName();
+                detectedFaces[index] = f;
                 index++;
             } 
         }
-        return detectedFaces;
+        String[] returnValue = new String[index];
+        for (int j = 0; j < index; j++) {
+            returnValue[j] = detectedFaces[j].getName();
+        }
+        return returnValue;
     }
 }

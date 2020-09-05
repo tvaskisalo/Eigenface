@@ -30,9 +30,12 @@ detected <- function(faces, others) {
   }
   return(v)
 }
-
-
-print("Hello world, this is data-analysis")
+#Lukujen ja vektoreiden nimeäminen: Aluksi on ts eli testsize, jonka jälkeen on harjoituskuvien määrä.
+#Sitten joko g tai r. G on eigenfacen generoinnin aika ja R on kasvojentunnistuksen aika.
+#Tai vaihtoehtoisesti face tai other. Face on oikeiden kasvojen kasvojentunnistuksen arvoja ja other on satunnasiten ei-kasvo kuvien kasvojentunnistuksen arvoja.
+#Tämän jälkeen on kuvan kannan pituus pikseleinä
+#Eli ts100gtime25 tarkoittaa harjoitusdatan, jonka koko on 100 kuvaa, generointi aikaa, kun kuvan kanta on 25.
+#Alla olevissa tunnistettavien kuvien määrä on 200.
 #100 faces in training set
 ts100gtime25 <- 1.05
 ts100rtime25 <- 0.49
@@ -71,15 +74,22 @@ ts200rtime100 <- 2.71
 ts400gtime25 <- 84.14
 ts400rtime25 <- 0.51
 
-ts400gtime50 <-89.14
-ts400rtime50 <-1.05
+ts400gtime50 <- 89.14
+ts400rtime50 <- 1.05
 
-ts400gtime75 <-92.29
-ts400rtime75 <-2.57
+ts400gtime75 <- 92.29
+ts400rtime75 <- 2.57
 
-ts400gtime100 <-106.71
+ts400gtime100 <- 106.71
 ts400rtime100 <- 4.58
-
+#Kasvojentunnistukseen kulunutaika eri tunnistettavien kasvojen määrällä.
+#FacialRecognition
+ts100rtimeFaceAmount50 <-  0.71
+ts100rtimeFaceAmount100 <- 0.84 
+ts100rtimeFaceAmount200 <- 1.66
+ts100rtimeFaceAmount400 <- 3.43
+  
+  
 detected25 <- detected(ts100face25, ts100other25)
 sorted25 <- sort(c(ts100face25, ts100other25))
 max25 <- sorted25[which(detected25==max(detected25))]
