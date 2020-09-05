@@ -23,3 +23,6 @@ Jos generoit itse eigenfacet pääset seuraavaan näkymään:
 Laita tähän haluamasi kuvan kannan koko, jonka ei tarvitse olla sama kuin harjoitusdatan kuvien koko.
 
 Sitten ohjelma tunnistaa kuvista kasvot ja antaa näkymän, jossa on dataa ohjelman suorituksesta, sekä pieni dia-esitys, jossa on kaikki tunnistetut kuvat
+
+
+PS. En harmillisesti saanut tehtyä compileä, sillä tuli yllättävä mutka matkaan projektissa, eikä aika riittänyt. Toivottavasti tämä ei pilaa kaikkea
