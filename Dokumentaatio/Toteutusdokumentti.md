@@ -100,9 +100,9 @@ Tämä toistetaan e kertaa, joten aikaa kuluu O(epm^2)
 
 Aikavaatimus kasvojentunnistukselle on siis O(epm^2)
 
-### Puutteet ja parnnukset
+### Puutteet ja parannukset
 
-Parannettavaa on jonkin verran. Esimerkiksi nopeampi ominaisarvojen laskeminen nopeuttaisi projektin generointia paljon. Myös tehokkaammasta matriisikertolaskun algoritmista olisi hyötyä. Kuitenkin koen, että ohjelma toimii hyvin, jos ottaa huomioon, että kaikki logiikan algoritmit ovat tuotettu itse. Käyttöliittymä voisi myös olla kauniimpi.
+Parannettavaa on jonkin verran. Esimerkiksi nopeampi ominaisarvojen laskeminen nopeuttaisi projektin generointia paljon. Myös tehokkaammasta matriisikertolaskun algoritmista olisi hyötyä. Kuitenkin koen, että ohjelma toimii hyvin, jos ottaa huomioon, että kaikki logiikan algoritmit ovat tuotettu itse. Käyttöliittymä voisi myös olla kauniimpi. Myös laajemmat testit, sekä parempi dokumentaatio olisi hyvästä.
 
 ### Lähteet:
 
