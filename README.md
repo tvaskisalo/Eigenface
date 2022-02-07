@@ -1,5 +1,6 @@
 # Eigenface
-Java projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit varten 
+Java projekti kurssia Aineopintojen harjoitustyö: Tietorakenteet ja Algoritmit varten.
+
 Vaatii, että Maven, Java, sekä openjdk-11-jdk ovat asennettuna.
 
 ## Dokumentointi
